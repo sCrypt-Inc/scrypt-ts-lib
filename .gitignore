@@ -1,0 +1,6 @@
+node_modules
+dist
+scrypts
+scrypt.index.json
+tests/out
+tests/scrypt.index.json

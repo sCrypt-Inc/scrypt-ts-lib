@@ -1,0 +1,38 @@
+{
+  "name": "scrypt-ts-lib",
+  "version": "0.1.0-alpha-1",
+  "description": "A collection of smart contract libraries for `scrypt-ts`.",
+  "main": "index.js",
+  "scripts": {
+    "prebuild": "rimraf dist scrypts scrypt.index.json",
+    "build": "tsc",
+    "pretest": "cd tests && rimraf out && tsc",
+    "test": "mocha 'tests/out/**/*.test.js' --timeout 60000"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sCrypt-Inc/scrypt-ts-lib.git"
+  },
+  "keywords": [
+    "scrypt-ts"
+  ],
+  "author": "sCrypt.Inc",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sCrypt-Inc/scrypt-ts-lib/issues"
+  },
+  "homepage": "https://github.com/sCrypt-Inc/scrypt-ts-lib#readme",
+  "dependencies": {
+    "scrypt-ts": "^0.1.5-beta.1"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.3.4",
+    "@types/mocha": "^10.0.0",
+    "@types/node": "^18.11.10",
+    "chai": "^4.3.6",
+    "circomlibjs": "^0.1.7",
+    "mocha": "^10.1.0",
+    "rimraf": "^3.0.2",
+    "typescript": "=4.8.4"
+  }
+}
