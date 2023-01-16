@@ -121,28 +121,28 @@ export class BN256 extends SmartContractLib {
 
     @prop()
     static readonly FQ6Zero: FQ6 = {
-        x: this.FQ2Zero,
-        y: this.FQ2Zero,
-        z: this.FQ2Zero,
+        x: BN256.FQ2Zero,
+        y: BN256.FQ2Zero,
+        z: BN256.FQ2Zero,
     }
 
     @prop()
     static readonly FQ6One: FQ6 = {
-        x: this.FQ2Zero,
-        y: this.FQ2Zero,
-        z: this.FQ2One,
+        x: BN256.FQ2Zero,
+        y: BN256.FQ2Zero,
+        z: BN256.FQ2One,
     }
 
     @prop()
     static readonly FQ12Zero: FQ12 = {
-        x: this.FQ6Zero,
-        y: this.FQ6Zero,
+        x: BN256.FQ6Zero,
+        y: BN256.FQ6Zero,
     }
 
     @prop()
     static readonly FQ12One: FQ12 = {
-        x: this.FQ6Zero,
-        y: this.FQ6One,
+        x: BN256.FQ6Zero,
+        y: BN256.FQ6One,
     }
 
     // Curve field modulus:
@@ -1080,13 +1080,12 @@ export class BN256 extends SmartContractLib {
         if (BN256.modReduce(a.z, BN256.P) != 1n) {
             if (a.z == 0n) {
                 // TODO: Fix once https://github.com/sCrypt-Inc/scrypt-ts/issues/123 is done
-                const resTmp: CurvePoint = {
+                res = {
                     x: 0n,
                     y: 1n,
                     z: 0n,
                     t: 0n,
                 }
-                res = resTmp
             } else {
                 const zInv = BN256.modInverseBranchlessP(a.z)
                 const t = BN256.modReduce(a.y * zInv, BN256.P)
@@ -1094,13 +1093,12 @@ export class BN256 extends SmartContractLib {
                 const ay = BN256.modReduce(t * zInv2, BN256.P)
                 const ax = BN256.modReduce(a.x * zInv2, BN256.P)
 
-                const resTmp: CurvePoint = {
+                res = {
                     x: ax,
                     y: ay,
                     z: 1n,
                     t: 1n,
                 }
-                res = resTmp
             }
         }
 
@@ -1132,13 +1130,12 @@ export class BN256 extends SmartContractLib {
             t: 1n,
         }
         if (ccp.x == 0n && ccp.y == 0n) {
-            const resTmp: CurvePoint = {
+            res = {
                 x: 0n,
                 y: 1n,
                 z: 0n,
                 t: 0n,
             }
-            res = resTmp
         }
         return res
     }
@@ -1151,11 +1148,10 @@ export class BN256 extends SmartContractLib {
             y: acp.y,
         }
         if (acp.x == 0n && acp.y == 1n && acp.z == 0n && acp.t == 0n) {
-            const resTmp: G1Point = {
+            res = {
                 x: 0n,
                 y: 0n,
             }
-            res = resTmp
         }
         return res
     }
@@ -1307,13 +1303,12 @@ export class BN256 extends SmartContractLib {
         let res = a
         if (a.z.x != 0n || a.z.y != 1n) {
             if (a.z == BN256.FQ2Zero) {
-                const resTmp: TwistPoint = {
+                res = {
                     x: BN256.FQ2Zero,
                     y: BN256.FQ2One,
                     z: BN256.FQ2Zero,
                     t: BN256.FQ2Zero,
                 }
-                res = resTmp
             } else {
                 const zInv = BN256.inverseFQ2(a.z)
                 let t = BN256.mulFQ2(a.y, zInv)
@@ -1366,21 +1361,20 @@ export class BN256 extends SmartContractLib {
             t: BN256.FQ2One,
         }
 
-        if (ctp.x == BN256.FQ2Zero && ctp.y == this.FQ2Zero) {
-            const resTmp: TwistPoint = {
+        if (ctp.x == BN256.FQ2Zero && ctp.y == BN256.FQ2Zero) {
+            res = {
                 x: BN256.FQ2Zero,
                 y: BN256.FQ2One,
                 z: BN256.FQ2Zero,
                 t: BN256.FQ2Zero,
             }
-            res = resTmp
         }
         return res
     }
 
     @method()
     static getG2Point(tp: TwistPoint): G2Point {
-        const atp = this.makeAffineTwistPoint(tp)
+        const atp = BN256.makeAffineTwistPoint(tp)
         let res: G2Point = {
             x: atp.x,
             y: atp.y,
@@ -1392,11 +1386,10 @@ export class BN256 extends SmartContractLib {
             atp.z == BN256.FQ2Zero &&
             atp.t == BN256.FQ2Zero
         ) {
-            const resTmp: G2Point = {
+            res = {
                 x: BN256.FQ2Zero,
                 y: BN256.FQ2Zero,
             }
-            res = resTmp
         }
         return res
     }

@@ -4,3 +4,4 @@ scrypts
 scrypt.index.json
 tests/out
 tests/scrypt.index.json
+.eslintcache
