@@ -2,7 +2,6 @@ import { FixedArray, method, prop, SmartContractLib } from 'scrypt-ts';
 
 export class Mimc7 extends SmartContractLib {
 
-  @prop()
   static readonly ROUNDS = 91;
 
   @prop()
@@ -103,7 +102,8 @@ export class Mimc7 extends SmartContractLib {
     13602139229813231349386885113156901793661719180900395818909719758150455500533n
   ];
 
-  @method
+
+  @method()
   static hash(x: bigint, k: bigint): bigint {
     let ret = 0n;
     for (let i = 0; i < Mimc7.ROUNDS; i++) {

@@ -4,7 +4,7 @@ import { Mimc7 } from '../src/hash/mimc7';
 import { method, assert, SmartContract } from 'scrypt-ts';
 
 class Mimc7Test extends SmartContract {
-  @method
+  @method()
   public unlock(x: bigint, k: bigint, h: bigint) {
     assert(Mimc7.hash(x, k) === h);
   }
