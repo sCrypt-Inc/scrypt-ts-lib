@@ -7,6 +7,8 @@ import {
     method,
     lshift,
     prop,
+    SmartContract,
+    assert,
 } from 'scrypt-ts'
 
 export type FQ = bigint
@@ -256,11 +258,10 @@ export class BN256 extends SmartContractLib {
         const t_2 = a.x * b.x
         const ty_2 = ty - t_2
 
-        const res: FQ2 = {
+        return {
             x: BN256.modReduce(tx_2, BN256.P),
             y: BN256.modReduce(ty_2, BN256.P),
         }
-        return res
     }
 
     @method()
@@ -269,20 +270,18 @@ export class BN256 extends SmartContractLib {
         const tx = lshift(a.x, 3n) + a.x + a.y
         const ty = lshift(a.y, 3n) + a.y - a.x
 
-        const res: FQ2 = {
+        return {
             x: BN256.modReduce(tx, BN256.P),
             y: BN256.modReduce(ty, BN256.P),
         }
-        return res
     }
 
     @method()
     static mulScalarFQ2(a: FQ2, scalar: bigint): FQ2 {
-        const res: FQ2 = {
+        return {
             x: BN256.modReduce(a.x * scalar, BN256.P),
             y: BN256.modReduce(a.y * scalar, BN256.P),
         }
-        return res
     }
 
     @method()
@@ -634,7 +633,7 @@ export class BN256 extends SmartContractLib {
     }
 
     @method()
-    static forbeniusFQ6(a: FQ6): FQ6 {
+    static frobeniusFQ6(a: FQ6): FQ6 {
         const res: FQ6 = {
             x: BN256.mulFQ2(BN256.conjugateFQ2(a.x), BN256.xiTo2PMinus2Over3),
             y: BN256.mulFQ2(BN256.conjugateFQ2(a.y), BN256.xiToPMinus1Over3),
@@ -644,13 +643,13 @@ export class BN256 extends SmartContractLib {
     }
 
     @method()
-    static forbeniusP2FQ6(a: FQ6): FQ6 {
+    static frobeniusP2FQ6(a: FQ6): FQ6 {
         // FrobeniusP2 computes (xτ²+yτ+z)^(p²) = xτ^(2p²) + yτ^(p²) + z
         const res: FQ6 = {
             // τ^(2p²) = τ²τ^(2p²-2) = τ²ξ^((2p²-2)/3)
             x: BN256.mulScalarFQ2(a.x, BN256.xiTo2PSquaredMinus2Over3),
             // τ^(p²) = ττ^(p²-1) = τξ^((p²-1)/3)
-            y: BN256.mulScalarFQ2(a.x, BN256.xiToPSquaredMinus1Over3),
+            y: BN256.mulScalarFQ2(a.y, BN256.xiToPSquaredMinus1Over3),
             z: a.z,
         }
         return res
@@ -658,12 +657,11 @@ export class BN256 extends SmartContractLib {
 
     @method()
     static mulGFP(a: FQ6, b: bigint): FQ6 {
-        const res: FQ6 = {
+        return {
             x: BN256.mulScalarFQ2(a.x, b),
             y: BN256.mulScalarFQ2(a.y, b),
             z: BN256.mulScalarFQ2(a.z, b),
         }
-        return res
     }
 
     @method()
@@ -676,29 +674,27 @@ export class BN256 extends SmartContractLib {
     }
 
     @method()
-    static forbeniusFQ12(a: FQ12): FQ12 {
+    static frobeniusFQ12(a: FQ12): FQ12 {
         // Frobenius computes (xω+y)^p = x^p ω·ξ^((p-1)/6) + y^p
-        const res: FQ12 = {
+        return {
             x: BN256.mulScalarFQ6(
-                BN256.forbeniusFQ6(a.x),
+                BN256.frobeniusFQ6(a.x),
                 BN256.xiToPMinus1Over6
             ),
-            y: BN256.forbeniusFQ6(a.y),
+            y: BN256.frobeniusFQ6(a.y),
         }
-        return res
     }
 
     @method()
-    static forbeniusP2FQ12(a: FQ12): FQ12 {
+    static frobeniusP2FQ12(a: FQ12): FQ12 {
         // FrobeniusP2 computes (xω+y)^p² = x^p² ω·ξ^((p²-1)/6) + y^p²
-        const res: FQ12 = {
+        return {
             x: BN256.mulGFP(
-                BN256.forbeniusP2FQ6(a.x),
+                BN256.frobeniusP2FQ6(a.x),
                 BN256.xiToPSquaredMinus1Over6
             ),
-            y: BN256.forbeniusP2FQ6(a.y),
+            y: BN256.frobeniusP2FQ6(a.y),
         }
-        return res
     }
 
     @method()
@@ -842,9 +838,6 @@ export class BN256 extends SmartContractLib {
         let sum = BN256.FQ12One
         let t = BN256.FQ12One
 
-        const mb = unpack(
-            reverseBytes(int2str(power, BigInt(BN256.S)), Number(BN256.S))
-        )
         let firstOne = false
 
         for (let i = 0; i < BN256.CURVE_BITS_P8; i++) {
@@ -857,7 +850,7 @@ export class BN256 extends SmartContractLib {
                 BigInt(Number(BN256.CURVE_BITS_P8) - 1 - i)
             )
 
-            if (and(mb, shifted) != 0n) {
+            if (and(power, shifted) != 0n) {
                 firstOne = true
                 sum = BN256.mulFQ12(t, a)
             } else {
@@ -1392,5 +1385,204 @@ export class BN256 extends SmartContractLib {
             }
         }
         return res
+    }
+}
+
+// TODO: Don't compare each value separately (scryp-ts#130)
+// TODO: Move this back to tests
+export class BN256Test extends SmartContract {
+    @method()
+    public modReduce(x: bigint, m: bigint, res: bigint) {
+        assert(BN256.modReduce(x, m) == res)
+    }
+
+    @method()
+    public mulFQ2(a: FQ2, b: FQ2, res: FQ2) {
+        const _res: FQ2 = BN256.mulFQ2(a, b)
+        assert(_res.x == res.x && _res.y == res.y)
+    }
+
+    @method()
+    public squareFQ2(a: FQ2, res: FQ2) {
+        const _res: FQ2 = BN256.squareFQ2(a)
+        assert(_res.x == res.x && _res.y == res.y)
+    }
+
+    @method()
+    public invFQ2(a: FQ2, res: FQ2) {
+        const _res: FQ2 = BN256.inverseFQ2(a)
+        assert(_res.x == res.x && _res.y == res.y)
+    }
+
+    @method()
+    public mulFQ6(a: FQ6, b: FQ6, res: FQ6) {
+        const _res: FQ6 = BN256.mulFQ6(a, b)
+        assert(
+            _res.x.x == res.x.x &&
+                _res.x.y == res.x.y &&
+                _res.y.x == res.y.x &&
+                _res.y.y == res.y.y &&
+                _res.z.x == res.z.x &&
+                _res.z.y == res.z.y
+        )
+    }
+
+    @method()
+    public squareFQ6(a: FQ6, res: FQ6) {
+        const _res: FQ6 = BN256.squareFQ6(a)
+        assert(
+            _res.x.x == res.x.x &&
+                _res.x.y == res.x.y &&
+                _res.y.x == res.y.x &&
+                _res.y.y == res.y.y &&
+                _res.z.x == res.z.x &&
+                _res.z.y == res.z.y
+        )
+    }
+
+    @method()
+    public invFQ6(a: FQ6, res: FQ6) {
+        const _res: FQ6 = BN256.inverseFQ6(a)
+        assert(
+            _res.x.x == res.x.x &&
+                _res.x.y == res.x.y &&
+                _res.y.x == res.y.x &&
+                _res.y.y == res.y.y &&
+                _res.z.x == res.z.x &&
+                _res.z.y == res.z.y
+        )
+    }
+
+    @method()
+    public squareFQ12(a: FQ12, res: FQ12) {
+        const _res: FQ12 = BN256.squareFQ12(a)
+        assert(
+            _res.x.x.x == res.x.x.x &&
+                _res.x.x.y == res.x.x.y &&
+                _res.x.y.x == res.x.y.x &&
+                _res.x.y.y == res.x.y.y &&
+                _res.x.z.x == res.x.z.x &&
+                _res.x.z.y == res.x.z.y &&
+                _res.y.x.x == res.y.x.x &&
+                _res.y.x.y == res.y.x.y &&
+                _res.y.y.x == res.y.y.x &&
+                _res.y.y.y == res.y.y.y &&
+                _res.y.z.x == res.y.z.x &&
+                _res.y.z.y == res.y.z.y
+        )
+    }
+
+    @method()
+    public invFQ12(a: FQ12, res: FQ12) {
+        const _res: FQ12 = BN256.inverseFQ12(a)
+        assert(
+            _res.x.x.x == res.x.x.x &&
+                _res.x.x.y == res.x.x.y &&
+                _res.x.y.x == res.x.y.x &&
+                _res.x.y.y == res.x.y.y &&
+                _res.x.z.x == res.x.z.x &&
+                _res.x.z.y == res.x.z.y &&
+                _res.y.x.x == res.y.x.x &&
+                _res.y.x.y == res.y.x.y &&
+                _res.y.y.x == res.y.y.x &&
+                _res.y.y.y == res.y.y.y &&
+                _res.y.z.x == res.y.z.x &&
+                _res.y.z.y == res.y.z.y
+        )
+    }
+
+    @method()
+    public expFQ12(a: FQ12, power: bigint, res: FQ12) {
+        const _res: FQ12 = BN256.expFQ12(a, power)
+        assert(
+            _res.x.x.x == res.x.x.x &&
+                _res.x.x.y == res.x.x.y &&
+                _res.x.y.x == res.x.y.x &&
+                _res.x.y.y == res.x.y.y &&
+                _res.x.z.x == res.x.z.x &&
+                _res.x.z.y == res.x.z.y &&
+                _res.y.x.x == res.y.x.x &&
+                _res.y.x.y == res.y.x.y &&
+                _res.y.y.x == res.y.y.x &&
+                _res.y.y.y == res.y.y.y &&
+                _res.y.z.x == res.y.z.x &&
+                _res.y.z.y == res.y.z.y
+        )
+    }
+
+    @method()
+    public expFQ12_u(a: FQ12, res: FQ12) {
+        const _res: FQ12 = BN256.expFQ12_u(a)
+        assert(
+            _res.x.x.x == res.x.x.x &&
+                _res.x.x.y == res.x.x.y &&
+                _res.x.y.x == res.x.y.x &&
+                _res.x.y.y == res.x.y.y &&
+                _res.x.z.x == res.x.z.x &&
+                _res.x.z.y == res.x.z.y &&
+                _res.y.x.x == res.y.x.x &&
+                _res.y.x.y == res.y.x.y &&
+                _res.y.y.x == res.y.y.x &&
+                _res.y.y.y == res.y.y.y &&
+                _res.y.z.x == res.y.z.x &&
+                _res.y.z.y == res.y.z.y
+        )
+    }
+
+    @method()
+    public frobeniusFQ12(a: FQ12, res: FQ12) {
+        const _res: FQ12 = BN256.frobeniusFQ12(a)
+        assert(
+            _res.x.x.x == res.x.x.x &&
+                _res.x.x.y == res.x.x.y &&
+                _res.x.y.x == res.x.y.x &&
+                _res.x.y.y == res.x.y.y &&
+                _res.x.z.x == res.x.z.x &&
+                _res.x.z.y == res.x.z.y &&
+                _res.y.x.x == res.y.x.x &&
+                _res.y.x.y == res.y.x.y &&
+                _res.y.y.x == res.y.y.x &&
+                _res.y.y.y == res.y.y.y &&
+                _res.y.z.x == res.y.z.x &&
+                _res.y.z.y == res.y.z.y
+        )
+    }
+
+    @method()
+    public frobeniusP2FQ12(a: FQ12, res: FQ12) {
+        const _res: FQ12 = BN256.frobeniusP2FQ12(a)
+        assert(
+            _res.x.x.x == res.x.x.x &&
+                _res.x.x.y == res.x.x.y &&
+                _res.x.y.x == res.x.y.x &&
+                _res.x.y.y == res.x.y.y &&
+                _res.x.z.x == res.x.z.x &&
+                _res.x.z.y == res.x.z.y &&
+                _res.y.x.x == res.y.x.x &&
+                _res.y.x.y == res.y.x.y &&
+                _res.y.y.x == res.y.y.x &&
+                _res.y.y.y == res.y.y.y &&
+                _res.y.z.x == res.y.z.x &&
+                _res.y.z.y == res.y.z.y
+        )
+    }
+
+    @method()
+    public mulFQ12(a: FQ12, b: FQ12, res: FQ12) {
+        const _res: FQ12 = BN256.mulFQ12(a, b)
+        assert(
+            _res.x.x.x == res.x.x.x &&
+                _res.x.x.y == res.x.x.y &&
+                _res.x.y.x == res.x.y.x &&
+                _res.x.y.y == res.x.y.y &&
+                _res.x.z.x == res.x.z.x &&
+                _res.x.z.y == res.x.z.y &&
+                _res.y.x.x == res.y.x.x &&
+                _res.y.x.y == res.y.x.y &&
+                _res.y.y.x == res.y.y.x &&
+                _res.y.y.y == res.y.y.y &&
+                _res.y.z.x == res.y.z.x &&
+                _res.y.z.y == res.y.z.y
+        )
     }
 }
