@@ -3,6 +3,7 @@
   "version": "0.1.3",
   "description": "A collection of smart contract libraries for `scrypt-ts`.",
   "main": "index.js",
+  "types": "dist",
   "scripts": {
     "prebuild": "rimraf dist scrypts scrypt.index.json",
     "build": "tsc",
