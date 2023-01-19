@@ -1,3 +1,6 @@
+[![CI-Test](https://github.com/sCrypt-Inc/scrypt-ts-lib/actions/workflows/ci.yml/badge.svg)](https://github.com/sCrypt-Inc/scrypt-ts-lib/actions/workflows/ci.yml)
+[![Build Status](https://app.travis-ci.com/sCrypt-Inc/scrypt-ts-lib.svg?branch=master)](https://app.travis-ci.com/sCrypt-Inc/scrypt-ts-lib)
+
 # scrypt-ts-lib
 
 A collection of contracts and libraries for writing smart contracts with [`scrypt-ts`](https://www.npmjs.com/package/scrypt-ts).
