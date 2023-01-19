@@ -240,7 +240,6 @@ export class BN256 extends SmartContractLib {
 
     @method()
     static modReduce(x: bigint, modulus: bigint): bigint {
-        // TODO: consistent across TS and sCrypt?
         const res = x % modulus
         return res < 0 ? res + modulus : res
     }
@@ -389,14 +388,14 @@ export class BN256 extends SmartContractLib {
 
     @method()
     static modInverseBranchlessP(x: bigint): bigint {
-        // TODO: This will get substituted by optimized ASM code at transpilation stage.
+        // This will get substituted by optimized ASM code at transpilation stage.
         // The bellow code is ran while executing in a JS context.
         return BN256.modInverseEGCD(x, BN256.P)
     }
 
     @method()
     static modInverseEGCD(x: bigint, m: bigint): bigint {
-        // TODO: This will get substituted by optimized ASM code at transpilation stage.
+        // This will get substituted by optimized ASM code at transpilation stage.
         x = BN256.modReduce(x, BN256.P)
 
         let t = 0n
@@ -659,7 +658,7 @@ export class BN256 extends SmartContractLib {
 
     @method()
     static mulFQ12(a: FQ12, b: FQ12): FQ12 {
-        // TODO: This will get substituted by optimized ASM code at transpilation stage.
+        // This will get substituted by optimized ASM code at transpilation stage.
         const tx = BN256.mulFQ6(a.x, b.y)
         const t = BN256.mulFQ6(b.x, a.y)
         const tx2 = BN256.addFQ6(tx, t)
@@ -742,7 +741,7 @@ export class BN256 extends SmartContractLib {
 
     @method()
     static squareFQ12(a: FQ12): FQ12 {
-        // TODO: This will get substituted by optimized ASM code at transpilation stage.
+        // This will get substituted by optimized ASM code at transpilation stage.
         // Complex squaring algorithm
         const v0 = BN256.mulFQ6(a.x, a.y)
 
@@ -877,7 +876,6 @@ export class BN256 extends SmartContractLib {
 
     @method()
     static expFQ12(a: FQ12, power: bigint): FQ12 {
-        // TODO: can precalc "shifted" and "mb"
         let sum = BN256.FQ12One
         let t = BN256.FQ12One
 
@@ -885,7 +883,7 @@ export class BN256 extends SmartContractLib {
 
         for (let i = 0; i < BN256.CURVE_BITS_P8; i++) {
             if (firstOne) {
-                t = BN256.squareFQ12(sum)
+                t = BN256.modFQ12(BN256.squareFQ12(sum))
             }
 
             const shifted = lshift(
@@ -912,7 +910,7 @@ export class BN256 extends SmartContractLib {
 
     @method()
     static doubleCurvePoint(a: CurvePoint): CurvePoint {
-        // TODO: This will get substituted by optimized ASM code at transpilation stage.
+        // This will get substituted by optimized ASM code at transpilation stage.
         // See http://hyperelliptic.org/EFD/g1p/auto-code/shortw/jacobian-0/doubling/dbl-2009-l.op3
         const res: CurvePoint = {
             x: 0n,
@@ -954,7 +952,6 @@ export class BN256 extends SmartContractLib {
     @method()
     static addG1Point(a: G1Point, b: G1Point): G1Point {
         const res = BN256.addCurvePoints(
-            BN256.P,
             BN256.createCurvePoint(a),
             BN256.createCurvePoint(b)
         )
@@ -962,8 +959,17 @@ export class BN256 extends SmartContractLib {
     }
 
     @method()
-    static addCurvePoints(P: bigint, a: CurvePoint, b: CurvePoint): CurvePoint {
-        // TODO: This will get substituted by optimized ASM code at transpilation stage.
+    static addCurvePoints(a: CurvePoint, b: CurvePoint): CurvePoint {
+        return BN256._addCurvePoints(BN256.P, a, b)
+    }
+
+    @method()
+    static _addCurvePoints(
+        P: bigint,
+        a: CurvePoint,
+        b: CurvePoint
+    ): CurvePoint {
+        // This will get substituted by optimized ASM code at transpilation stage.
         // See http://hyperelliptic.org/EFD/g1p/auto-code/shortw/jacobian-0/addition/add-2007-bl.op3
         let res: CurvePoint = {
             x: 0n,
@@ -1092,7 +1098,7 @@ export class BN256 extends SmartContractLib {
                     )
                     if (and(m, shifted) != 0n) {
                         firstOne = true
-                        sum = BN256.addCurvePoints(BN256.P, t, a)
+                        sum = BN256.addCurvePoints(t, a)
                     } else {
                         sum = t
                     }
@@ -1112,7 +1118,6 @@ export class BN256 extends SmartContractLib {
         let res = a
         if (BN256.modReduce(a.z, BN256.P) != 1n) {
             if (a.z == 0n) {
-                // TODO: Fix once https://github.com/sCrypt-Inc/scrypt-ts/issues/123 is done
                 res = {
                     x: 0n,
                     y: 1n,

@@ -40,7 +40,12 @@ class BN256Test extends SmartContract {
 
     @method()
     public squareFQ12(a: FQ12, res: FQ12) {
-        assert(BN256.compareFQ12(BN256.squareFQ12(a), res))
+        assert(
+            BN256.compareFQ12(
+                BN256.modFQ12(BN256.squareFQ12(a)),
+                BN256.modFQ12(res)
+            )
+        )
     }
 
     @method()
@@ -50,7 +55,12 @@ class BN256Test extends SmartContract {
 
     @method()
     public expFQ12(a: FQ12, power: bigint, res: FQ12) {
-        assert(BN256.compareFQ12(BN256.expFQ12(a, power), res))
+        assert(
+            BN256.compareFQ12(
+                BN256.modFQ12(BN256.expFQ12(a, power)),
+                BN256.modFQ12(res)
+            )
+        )
     }
 
     @method()
@@ -70,18 +80,31 @@ class BN256Test extends SmartContract {
 
     @method()
     public mulFQ12(a: FQ12, b: FQ12, res: FQ12) {
-        assert(BN256.compareFQ12(BN256.mulFQ12(a, b), res))
+        assert(
+            BN256.compareFQ12(
+                BN256.modFQ12(BN256.mulFQ12(a, b)),
+                BN256.modFQ12(res)
+            )
+        )
     }
 
     @method()
     public doubleCurvePoint(a: CurvePoint, res: CurvePoint) {
-        assert(BN256.compareCurvePoints(BN256.doubleCurvePoint(a), res))
+        assert(
+            BN256.compareCurvePoints(
+                BN256.modCurvePoint(BN256.doubleCurvePoint(a)),
+                BN256.modCurvePoint(res)
+            )
+        )
     }
 
     @method()
     public addCurvePoints(a: CurvePoint, b: CurvePoint, res: CurvePoint) {
         assert(
-            BN256.compareCurvePoints(BN256.addCurvePoints(BN256.P, a, b), res)
+            BN256.compareCurvePoints(
+                BN256.modCurvePoint(BN256.addCurvePoints(a, b)),
+                BN256.modCurvePoint(res)
+            )
         )
     }
 
@@ -91,8 +114,13 @@ class BN256Test extends SmartContract {
     }
 
     @method()
-    public mulCurvePoint(a: CurvePoint, b: bigint, res: CurvePoint) {
-        assert(BN256.compareCurvePoints(BN256.mulCurvePoint(a, b), res))
+    public mulCurvePoint(a: CurvePoint, scalar: bigint, res: CurvePoint) {
+        assert(
+            BN256.compareCurvePoints(
+                BN256.modCurvePoint(BN256.mulCurvePoint(a, scalar)),
+                BN256.modCurvePoint(res)
+            )
+        )
     }
 
     @method()

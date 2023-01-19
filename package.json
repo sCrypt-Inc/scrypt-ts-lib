@@ -1,6 +1,6 @@
 {
   "name": "scrypt-ts-lib",
-  "version": "0.1.0-alpha-1",
+  "version": "0.1.0-alpha-2",
   "description": "A collection of smart contract libraries for `scrypt-ts`.",
   "main": "index.js",
   "scripts": {
@@ -13,7 +13,8 @@
     "test-optim": "npm run build && npm run apply-optim && mocha 'dist/tests/**/*.test.js' --timeout 1200000",
     "lint": "eslint . --ext .js,.ts --fix && prettier --write --ignore-unknown \"**/*\"",
     "lint-check": "eslint . --ext .js,.ts && prettier --check --ignore-unknown \"**/*\"",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "prepublishOnly": "npm run build && npm run apply-optim"
   },
   "lint-staged": {
     "**/*": [

@@ -5,6 +5,7 @@ test/out/
 test/dist
 test/scrypts
 scrypts/
+optimizations/
 **/.env
 **/scrypt.index.json
 .vscode/*
