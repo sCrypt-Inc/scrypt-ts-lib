@@ -25,3 +25,5 @@ jobs:
         run: npm i
       - name: Test
         run: npm t
+      - name: Test with optimizations
+        run: npm run test-optim
