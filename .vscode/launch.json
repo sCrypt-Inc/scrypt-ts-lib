@@ -1,0 +1,24 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Launch BN256 local test",
+      "skipFiles": ["<node_internals>/**", "**/node_modules/**"],
+      "resolveSourceMapLocations": ["!**/node_modules/**"],
+      "program": "${workspaceRoot}/node_modules/.bin/_mocha",
+      "args": [
+        "${workspaceRoot}/dist/tests/**/bn256.test.js",
+        "--colors",
+        "-t",
+        "1000000"
+      ],
+      "preLaunchTask": "tsc: build - tsconfig.json",
+      "outFiles": []
+    }
+  ]
+}
