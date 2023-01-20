@@ -1432,3 +1432,961 @@ export class BN256 extends SmartContractLib {
         return res
     }
 }
+
+export type LineFuncRes = {
+    a: FQ2
+    b: FQ2
+    c: FQ2
+    rOut: TwistPoint
+}
+
+export class BN256Pairing extends SmartContractLib {
+    @method()
+    static compareLineFuncRes(a: LineFuncRes, b: LineFuncRes): boolean {
+        return (
+            a.a.x == b.a.x &&
+            a.a.y == b.a.y &&
+            a.b.x == b.b.x &&
+            a.b.y == b.b.y &&
+            a.c.x == b.c.x &&
+            a.c.y == b.c.y &&
+            a.rOut.x.x == b.rOut.x.x &&
+            a.rOut.x.y == b.rOut.x.y &&
+            a.rOut.y.x == b.rOut.y.x &&
+            a.rOut.y.y == b.rOut.y.y &&
+            a.rOut.z.x == b.rOut.z.x &&
+            a.rOut.z.y == b.rOut.z.y &&
+            a.rOut.t.x == b.rOut.t.x &&
+            a.rOut.t.y == b.rOut.t.y
+        )
+    }
+
+    @method()
+    static modLineFuncRes(l: LineFuncRes): LineFuncRes {
+        l.a = BN256.modFQ2(l.a)
+        l.b = BN256.modFQ2(l.b)
+        l.c = BN256.modFQ2(l.c)
+        l.rOut.x = BN256.modFQ2(l.rOut.x)
+        l.rOut.y = BN256.modFQ2(l.rOut.y)
+        l.rOut.z = BN256.modFQ2(l.rOut.z)
+        l.rOut.t = BN256.modFQ2(l.rOut.t)
+        return l
+    }
+
+    @method()
+    static lineFuncAdd(
+        r: TwistPoint,
+        p: TwistPoint,
+        q: CurvePoint,
+        r2: FQ2
+    ): LineFuncRes {
+        // This will get substituted by optimized ASM code at transpilation stage.
+
+        // See the mixed addition algorithm from "Faster Computation of the
+        // Tate Pairing", http://arxiv.org/pdf/0904.0854v3.pdf
+
+        const B = BN256.mulFQ2(p.x, r.t)
+        let D = BN256.addFQ2(p.y, r.z)
+        D = BN256.squareFQ2(D)
+        D = BN256.subFQ2(D, r2)
+        D = BN256.subFQ2(D, r.t)
+        D = BN256.mulFQ2(D, r.t)
+
+        const H = BN256.subFQ2(B, r.x)
+        const I = BN256.squareFQ2(H)
+
+        let E = BN256.addFQ2(I, I)
+        E = BN256.addFQ2(E, E)
+
+        const J = BN256.mulFQ2(H, E)
+
+        let L1 = BN256.subFQ2(D, r.y)
+        L1 = BN256.subFQ2(L1, r.y)
+
+        const V = BN256.mulFQ2(r.x, E)
+
+        let rOutX = BN256.squareFQ2(L1)
+        rOutX = BN256.subFQ2(rOutX, J)
+        rOutX = BN256.subFQ2(rOutX, V)
+        rOutX = BN256.subFQ2(rOutX, V)
+
+        let rOutZ = BN256.addFQ2(r.z, H)
+        rOutZ = BN256.squareFQ2(rOutZ)
+        rOutZ = BN256.subFQ2(rOutZ, r.t)
+        rOutZ = BN256.subFQ2(rOutZ, I)
+
+        let t = BN256.subFQ2(V, rOutX)
+        t = BN256.mulFQ2(t, L1)
+        let t2 = BN256.mulFQ2(r.y, J)
+        t2 = BN256.addFQ2(t2, t2)
+        const rOutY = BN256.subFQ2(t, t2)
+
+        const rOutT = BN256.squareFQ2(rOutZ)
+
+        t = BN256.addFQ2(p.y, rOutZ)
+        t = BN256.squareFQ2(t)
+        t = BN256.subFQ2(t, r2)
+        t = BN256.subFQ2(t, rOutT)
+
+        t2 = BN256.mulFQ2(L1, p.x)
+        t2 = BN256.addFQ2(t2, t2)
+        const a = BN256.subFQ2(t2, t)
+
+        let c = BN256.mulScalarFQ2(rOutZ, q.y)
+        c = BN256.addFQ2(c, c)
+
+        let b = BN256.subFQ2(BN256.FQ2Zero, L1)
+        b = BN256.mulScalarFQ2(b, q.x)
+        b = BN256.addFQ2(b, b)
+
+        const rOut: TwistPoint = {
+            x: rOutX,
+            y: rOutY,
+            z: rOutZ,
+            t: rOutT,
+        }
+
+        return {
+            a: a,
+            b: b,
+            c: c,
+            rOut: rOut,
+        }
+    }
+
+    @method()
+    static lineFuncDouble(r: TwistPoint, q: CurvePoint): LineFuncRes {
+        // See the doubling algorithm for a=0 from "Faster Computation of the
+        // Tate Pairing", http://arxiv.org/pdf/0904.0854v3.pdf
+
+        const A = BN256.squareFQ2(r.x)
+        const B = BN256.squareFQ2(r.y)
+        const C = BN256.squareFQ2(B)
+
+        let D = BN256.addFQ2(r.x, B)
+        D = BN256.squareFQ2(D)
+        D = BN256.subFQ2(D, A)
+        D = BN256.subFQ2(D, C)
+        D = BN256.addFQ2(D, D)
+
+        let E = BN256.addFQ2(A, A)
+        E = BN256.addFQ2(E, A)
+
+        const G = BN256.squareFQ2(E)
+
+        let rOutX = BN256.subFQ2(G, D)
+        rOutX = BN256.subFQ2(rOutX, D)
+
+        let rOutZ = BN256.addFQ2(r.y, r.z)
+        rOutZ = BN256.squareFQ2(rOutZ)
+        rOutZ = BN256.subFQ2(rOutZ, B)
+        rOutZ = BN256.subFQ2(rOutZ, r.t)
+
+        let rOutY = BN256.subFQ2(D, rOutX)
+        rOutY = BN256.mulFQ2(rOutY, E)
+        let t = BN256.addFQ2(C, C)
+        t = BN256.addFQ2(t, t)
+        t = BN256.addFQ2(t, t)
+        rOutY = BN256.subFQ2(rOutY, t)
+
+        const rOutT = BN256.squareFQ2(rOutZ)
+
+        t = BN256.mulFQ2(E, r.t)
+        t = BN256.addFQ2(t, t)
+        let b = BN256.subFQ2(BN256.FQ2Zero, t)
+        b = BN256.mulScalarFQ2(b, q.x)
+
+        let a = BN256.addFQ2(r.x, E)
+        a = BN256.squareFQ2(a)
+        a = BN256.subFQ2(a, A)
+        a = BN256.subFQ2(a, G)
+        t = BN256.addFQ2(B, B)
+        t = BN256.addFQ2(t, t)
+        a = BN256.subFQ2(a, t)
+
+        let c = BN256.mulFQ2(rOutZ, r.t)
+        c = BN256.addFQ2(c, c)
+        c = BN256.mulScalarFQ2(c, q.y)
+
+        const rOut: TwistPoint = {
+            x: rOutX,
+            y: rOutY,
+            z: rOutZ,
+            t: rOutT,
+        }
+
+        return {
+            a: a,
+            b: b,
+            c: c,
+            rOut: rOut,
+        }
+    }
+
+    @method()
+    static mulLine(ret: FQ12, a: FQ2, b: FQ2, c: FQ2): FQ12 {
+        let a2: FQ6 = {
+            x: BN256.FQ2Zero,
+            y: a,
+            z: b,
+        }
+        a2 = BN256.mulFQ6(a2, ret.x)
+        const t3 = BN256.mulScalarFQ6(ret.y, c)
+
+        const t = BN256.addFQ2(b, c)
+        const t2: FQ6 = {
+            x: BN256.FQ2Zero,
+            y: a,
+            z: t,
+        }
+
+        let resX = BN256.addFQ6(ret.x, ret.y)
+        let resY = t3
+
+        resX = BN256.mulFQ6(resX, t2)
+        resX = BN256.subFQ6(resX, a2)
+        resX = BN256.subFQ6(resX, resY)
+        a2 = BN256.mulTauFQ6(a2)
+        resY = BN256.addFQ6(resY, a2)
+
+        return {
+            x: resX,
+            y: resY,
+        }
+    }
+
+    @method()
+    static miller(q: TwistPoint, p: CurvePoint): FQ12 {
+        let ret = BN256.FQ12One
+
+        const aAffine = BN256.makeAffineTwistPoint(q)
+        const bAffine = BN256.makeAffineCurvePoint(p)
+
+        const minusA = BN256.negTwistPoint(aAffine)
+
+        let r = aAffine
+
+        let r2 = BN256.squareFQ2(aAffine.y)
+
+        // sixuPlus2NAF is 6u+2 in non-adjacent form.
+        // Unrolled loop to get rid of in-loop branching. Reference impl.:
+        // https://github.com/ethereum/go-ethereum/blob/bd6879ac518431174a490ba42f7e6e822dcb3ee1/crypto/bn256/google/optate.go#L213
+        // var sixuPlus2NAF = {}int8{0, 0, 0, 1, 0, 1, 0, -1, 0, 0, 1, -1, 0, 0, 1, 0,
+        //                           0, 1, 1, 0, -1, 0, 0, 1, 0, -1, 0, 0, 0, 0, 1, 1,
+        //                           1, 0, 0, -1, 0, 0, 1, 0, 0, 0, 0, 0, -1, 0, 0, 1,
+        //                           1, 0, 0, -1, 0, 0, 0, 1, 1, 0, -1, 0, 0, 1, 0, 1, 1}
+
+        //---- 1
+        let lfr = BN256Pairing.lineFuncDouble(r, bAffine)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+
+        lfr = BN256Pairing.lineFuncAdd(r, aAffine, bAffine, r2)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+        //---- 0
+        r = BN256.modTwistPoint(r)
+        ret = BN256.modFQ12(ret)
+        lfr = BN256Pairing.lineFuncDouble(r, bAffine)
+        ret = BN256.squareFQ12(ret)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+        //---- 1
+        lfr = BN256Pairing.lineFuncDouble(r, bAffine)
+        ret = BN256.squareFQ12(ret)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+
+        lfr = BN256Pairing.lineFuncAdd(r, aAffine, bAffine, r2)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+        //---- 0
+        r = BN256.modTwistPoint(r)
+        ret = BN256.modFQ12(ret)
+        lfr = BN256Pairing.lineFuncDouble(r, bAffine)
+        ret = BN256.squareFQ12(ret)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+        //---- 0
+        lfr = BN256Pairing.lineFuncDouble(r, bAffine)
+        ret = BN256.squareFQ12(ret)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+        //---- -1
+        r = BN256.modTwistPoint(r)
+        ret = BN256.modFQ12(ret)
+        lfr = BN256Pairing.lineFuncDouble(r, bAffine)
+        ret = BN256.squareFQ12(ret)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+
+        lfr = BN256Pairing.lineFuncAdd(r, minusA, bAffine, r2)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+        //---- 0
+        lfr = BN256Pairing.lineFuncDouble(r, bAffine)
+        ret = BN256.squareFQ12(ret)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+        //---- 1
+        r = BN256.modTwistPoint(r)
+        ret = BN256.modFQ12(ret)
+        lfr = BN256Pairing.lineFuncDouble(r, bAffine)
+        ret = BN256.squareFQ12(ret)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+
+        lfr = BN256Pairing.lineFuncAdd(r, aAffine, bAffine, r2)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+        //---- 1
+        lfr = BN256Pairing.lineFuncDouble(r, bAffine)
+        ret = BN256.squareFQ12(ret)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+
+        lfr = BN256Pairing.lineFuncAdd(r, aAffine, bAffine, r2)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+        //---- 0
+        r = BN256.modTwistPoint(r)
+        ret = BN256.modFQ12(ret)
+        lfr = BN256Pairing.lineFuncDouble(r, bAffine)
+        ret = BN256.squareFQ12(ret)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+        //---- 0
+        lfr = BN256Pairing.lineFuncDouble(r, bAffine)
+        ret = BN256.squareFQ12(ret)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+        //---- 0
+        r = BN256.modTwistPoint(r)
+        ret = BN256.modFQ12(ret)
+        lfr = BN256Pairing.lineFuncDouble(r, bAffine)
+        ret = BN256.squareFQ12(ret)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+        //---- -1
+        lfr = BN256Pairing.lineFuncDouble(r, bAffine)
+        ret = BN256.squareFQ12(ret)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+
+        lfr = BN256Pairing.lineFuncAdd(r, minusA, bAffine, r2)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+        //---- 0
+        r = BN256.modTwistPoint(r)
+        ret = BN256.modFQ12(ret)
+        lfr = BN256Pairing.lineFuncDouble(r, bAffine)
+        ret = BN256.squareFQ12(ret)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+        //---- 0
+        lfr = BN256Pairing.lineFuncDouble(r, bAffine)
+        ret = BN256.squareFQ12(ret)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+        //---- 1
+        r = BN256.modTwistPoint(r)
+        ret = BN256.modFQ12(ret)
+        lfr = BN256Pairing.lineFuncDouble(r, bAffine)
+        ret = BN256.squareFQ12(ret)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+
+        lfr = BN256Pairing.lineFuncAdd(r, aAffine, bAffine, r2)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+        //---- 1
+        lfr = BN256Pairing.lineFuncDouble(r, bAffine)
+        ret = BN256.squareFQ12(ret)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+
+        lfr = BN256Pairing.lineFuncAdd(r, aAffine, bAffine, r2)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+        //---- 0
+        r = BN256.modTwistPoint(r)
+        ret = BN256.modFQ12(ret)
+        lfr = BN256Pairing.lineFuncDouble(r, bAffine)
+        ret = BN256.squareFQ12(ret)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+        //---- 0
+        lfr = BN256Pairing.lineFuncDouble(r, bAffine)
+        ret = BN256.squareFQ12(ret)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+        //---- -1
+        r = BN256.modTwistPoint(r)
+        ret = BN256.modFQ12(ret)
+        lfr = BN256Pairing.lineFuncDouble(r, bAffine)
+        ret = BN256.squareFQ12(ret)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+
+        lfr = BN256Pairing.lineFuncAdd(r, minusA, bAffine, r2)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+        //---- 0
+        lfr = BN256Pairing.lineFuncDouble(r, bAffine)
+        ret = BN256.squareFQ12(ret)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+        //---- 0
+        r = BN256.modTwistPoint(r)
+        ret = BN256.modFQ12(ret)
+        lfr = BN256Pairing.lineFuncDouble(r, bAffine)
+        ret = BN256.squareFQ12(ret)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+        //---- 0
+        lfr = BN256Pairing.lineFuncDouble(r, bAffine)
+        ret = BN256.squareFQ12(ret)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+        //---- 0
+        r = BN256.modTwistPoint(r)
+        ret = BN256.modFQ12(ret)
+        lfr = BN256Pairing.lineFuncDouble(r, bAffine)
+        ret = BN256.squareFQ12(ret)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+        //---- 0
+        lfr = BN256Pairing.lineFuncDouble(r, bAffine)
+        ret = BN256.squareFQ12(ret)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+        //---- 1
+        r = BN256.modTwistPoint(r)
+        ret = BN256.modFQ12(ret)
+        lfr = BN256Pairing.lineFuncDouble(r, bAffine)
+        ret = BN256.squareFQ12(ret)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+
+        lfr = BN256Pairing.lineFuncAdd(r, aAffine, bAffine, r2)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+        //---- 0
+        lfr = BN256Pairing.lineFuncDouble(r, bAffine)
+        ret = BN256.squareFQ12(ret)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+        //---- 0
+        r = BN256.modTwistPoint(r)
+        ret = BN256.modFQ12(ret)
+        lfr = BN256Pairing.lineFuncDouble(r, bAffine)
+        ret = BN256.squareFQ12(ret)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+        //---- -1
+        lfr = BN256Pairing.lineFuncDouble(r, bAffine)
+        ret = BN256.squareFQ12(ret)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+
+        lfr = BN256Pairing.lineFuncAdd(r, minusA, bAffine, r2)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+        //---- 0
+        r = BN256.modTwistPoint(r)
+        ret = BN256.modFQ12(ret)
+        lfr = BN256Pairing.lineFuncDouble(r, bAffine)
+        ret = BN256.squareFQ12(ret)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+        //---- 0
+        lfr = BN256Pairing.lineFuncDouble(r, bAffine)
+        ret = BN256.squareFQ12(ret)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+        //---- 1
+        r = BN256.modTwistPoint(r)
+        ret = BN256.modFQ12(ret)
+        lfr = BN256Pairing.lineFuncDouble(r, bAffine)
+        ret = BN256.squareFQ12(ret)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+
+        lfr = BN256Pairing.lineFuncAdd(r, aAffine, bAffine, r2)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+        //---- 1
+        lfr = BN256Pairing.lineFuncDouble(r, bAffine)
+        ret = BN256.squareFQ12(ret)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+
+        lfr = BN256Pairing.lineFuncAdd(r, aAffine, bAffine, r2)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+        //---- 1
+        r = BN256.modTwistPoint(r)
+        ret = BN256.modFQ12(ret)
+        lfr = BN256Pairing.lineFuncDouble(r, bAffine)
+        ret = BN256.squareFQ12(ret)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+
+        lfr = BN256Pairing.lineFuncAdd(r, aAffine, bAffine, r2)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+        //---- 0
+        lfr = BN256Pairing.lineFuncDouble(r, bAffine)
+        ret = BN256.squareFQ12(ret)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+        //---- 0
+        r = BN256.modTwistPoint(r)
+        ret = BN256.modFQ12(ret)
+        lfr = BN256Pairing.lineFuncDouble(r, bAffine)
+        ret = BN256.squareFQ12(ret)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+        //---- 0
+        lfr = BN256Pairing.lineFuncDouble(r, bAffine)
+        ret = BN256.squareFQ12(ret)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+        //---- 0
+        r = BN256.modTwistPoint(r)
+        ret = BN256.modFQ12(ret)
+        lfr = BN256Pairing.lineFuncDouble(r, bAffine)
+        ret = BN256.squareFQ12(ret)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+        //---- -1
+        lfr = BN256Pairing.lineFuncDouble(r, bAffine)
+        ret = BN256.squareFQ12(ret)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+
+        lfr = BN256Pairing.lineFuncAdd(r, minusA, bAffine, r2)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+        //---- 0
+        r = BN256.modTwistPoint(r)
+        ret = BN256.modFQ12(ret)
+        lfr = BN256Pairing.lineFuncDouble(r, bAffine)
+        ret = BN256.squareFQ12(ret)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+        //---- 1
+        lfr = BN256Pairing.lineFuncDouble(r, bAffine)
+        ret = BN256.squareFQ12(ret)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+
+        lfr = BN256Pairing.lineFuncAdd(r, aAffine, bAffine, r2)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+        //---- 0
+        r = BN256.modTwistPoint(r)
+        ret = BN256.modFQ12(ret)
+        lfr = BN256Pairing.lineFuncDouble(r, bAffine)
+        ret = BN256.squareFQ12(ret)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+        //---- 0
+        lfr = BN256Pairing.lineFuncDouble(r, bAffine)
+        ret = BN256.squareFQ12(ret)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+        //---- -1
+        r = BN256.modTwistPoint(r)
+        ret = BN256.modFQ12(ret)
+        lfr = BN256Pairing.lineFuncDouble(r, bAffine)
+        ret = BN256.squareFQ12(ret)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+
+        lfr = BN256Pairing.lineFuncAdd(r, minusA, bAffine, r2)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+        //---- 0
+        lfr = BN256Pairing.lineFuncDouble(r, bAffine)
+        ret = BN256.squareFQ12(ret)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+        //---- 1
+        r = BN256.modTwistPoint(r)
+        ret = BN256.modFQ12(ret)
+        lfr = BN256Pairing.lineFuncDouble(r, bAffine)
+        ret = BN256.squareFQ12(ret)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+
+        lfr = BN256Pairing.lineFuncAdd(r, aAffine, bAffine, r2)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+        //---- 1
+        lfr = BN256Pairing.lineFuncDouble(r, bAffine)
+        ret = BN256.squareFQ12(ret)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+
+        lfr = BN256Pairing.lineFuncAdd(r, aAffine, bAffine, r2)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+        //---- 0
+        r = BN256.modTwistPoint(r)
+        ret = BN256.modFQ12(ret)
+        lfr = BN256Pairing.lineFuncDouble(r, bAffine)
+        ret = BN256.squareFQ12(ret)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+        //---- 0
+        lfr = BN256Pairing.lineFuncDouble(r, bAffine)
+        ret = BN256.squareFQ12(ret)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+        //---- 1
+        r = BN256.modTwistPoint(r)
+        ret = BN256.modFQ12(ret)
+        lfr = BN256Pairing.lineFuncDouble(r, bAffine)
+        ret = BN256.squareFQ12(ret)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+
+        lfr = BN256Pairing.lineFuncAdd(r, aAffine, bAffine, r2)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+        //---- 0
+        lfr = BN256Pairing.lineFuncDouble(r, bAffine)
+        ret = BN256.squareFQ12(ret)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+        //---- 0
+        r = BN256.modTwistPoint(r)
+        ret = BN256.modFQ12(ret)
+        lfr = BN256Pairing.lineFuncDouble(r, bAffine)
+        ret = BN256.squareFQ12(ret)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+        //---- -1
+        lfr = BN256Pairing.lineFuncDouble(r, bAffine)
+        ret = BN256.squareFQ12(ret)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+
+        lfr = BN256Pairing.lineFuncAdd(r, minusA, bAffine, r2)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+        //---- 1
+        r = BN256.modTwistPoint(r)
+        ret = BN256.modFQ12(ret)
+        lfr = BN256Pairing.lineFuncDouble(r, bAffine)
+        ret = BN256.squareFQ12(ret)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+
+        lfr = BN256Pairing.lineFuncAdd(r, aAffine, bAffine, r2)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+        //---- 0
+        lfr = BN256Pairing.lineFuncDouble(r, bAffine)
+        ret = BN256.squareFQ12(ret)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+        //---- 0
+        r = BN256.modTwistPoint(r)
+        ret = BN256.modFQ12(ret)
+        lfr = BN256Pairing.lineFuncDouble(r, bAffine)
+        ret = BN256.squareFQ12(ret)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+        //---- -1
+        lfr = BN256Pairing.lineFuncDouble(r, bAffine)
+        ret = BN256.squareFQ12(ret)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+
+        lfr = BN256Pairing.lineFuncAdd(r, minusA, bAffine, r2)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+        //---- 0
+        r = BN256.modTwistPoint(r)
+        ret = BN256.modFQ12(ret)
+        lfr = BN256Pairing.lineFuncDouble(r, bAffine)
+        ret = BN256.squareFQ12(ret)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+        //---- 1
+        lfr = BN256Pairing.lineFuncDouble(r, bAffine)
+        ret = BN256.squareFQ12(ret)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+
+        lfr = BN256Pairing.lineFuncAdd(r, aAffine, bAffine, r2)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+        //---- 0
+        r = BN256.modTwistPoint(r)
+        ret = BN256.modFQ12(ret)
+        lfr = BN256Pairing.lineFuncDouble(r, bAffine)
+        ret = BN256.squareFQ12(ret)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+        //---- 1
+        lfr = BN256Pairing.lineFuncDouble(r, bAffine)
+        ret = BN256.squareFQ12(ret)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+
+        lfr = BN256Pairing.lineFuncAdd(r, aAffine, bAffine, r2)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+        //---- 0
+        r = BN256.modTwistPoint(r)
+        ret = BN256.modFQ12(ret)
+        lfr = BN256Pairing.lineFuncDouble(r, bAffine)
+        ret = BN256.squareFQ12(ret)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+        //---- 0
+        lfr = BN256Pairing.lineFuncDouble(r, bAffine)
+        ret = BN256.squareFQ12(ret)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+        //---- 0
+        r = BN256.modTwistPoint(r)
+        ret = BN256.modFQ12(ret)
+        lfr = BN256Pairing.lineFuncDouble(r, bAffine)
+        ret = BN256.squareFQ12(ret)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+
+        // In order to calculate Q1 we have to convert q from the sextic twist
+        // to the full GF(p^12) group, apply the Frobenius there, and convert
+        // back.
+        //
+        // The twist isomorphism is (x', y') -> (xω², yω³). If we consider just
+        // x for a moment, then after applying the Frobenius, we have x̄ω^(2p)
+        // where x̄ is the conjugate of x. If we are going to apply the inverse
+        // isomorphism we need a value with a single coefficient of ω² so we
+        // rewrite this as x̄ω^(2p-2)ω². ξ⁶ = ω and, due to the construction of
+        // p, 2p-2 is a multiple of six. Therefore we can rewrite as
+        // x̄ξ^((p-1)/3)ω² and applying the inverse isomorphism eliminates the
+        // ω².
+        //
+        // A similar argument can be made for the y value.
+
+        let q1x = BN256.conjugateFQ2(aAffine.x)
+        q1x = BN256.mulFQ2(q1x, BN256.xiToPMinus1Over3)
+        let q1y = BN256.conjugateFQ2(aAffine.y)
+        q1y = BN256.mulFQ2(q1y, BN256.xiToPMinus1Over2)
+
+        const q1: TwistPoint = {
+            x: q1x,
+            y: q1y,
+            z: { x: 0n, y: 1n },
+            t: { x: 0n, y: 1n },
+        }
+
+        // For Q2 we are applying the p² Frobenius. The two conjugations cancel
+        // out and we are left only with the factors from the isomorphism. In
+        // the case of x, we end up with a pure number which is why
+        // xiToPSquaredMinus1Over3 is ∈ GF(p). With y we get a factor of -1. We
+        // ignore this to end up with -Q2.
+
+        const minusQ2x = BN256.mulScalarFQ2(
+            aAffine.x,
+            BN256.xiToPSquaredMinus1Over3
+        )
+        const minusQ2: TwistPoint = {
+            x: minusQ2x,
+            y: aAffine.y,
+            z: { x: 0n, y: 1n },
+            t: { x: 0n, y: 1n },
+        }
+
+        r2 = BN256.squareFQ2(q1.y)
+        lfr = BN256Pairing.lineFuncAdd(r, q1, bAffine, r2)
+        ret = BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c)
+        r = lfr.rOut
+
+        r2 = BN256.squareFQ2(minusQ2.y)
+        lfr = BN256Pairing.lineFuncAdd(r, minusQ2, bAffine, r2)
+        return BN256.modFQ12(BN256Pairing.mulLine(ret, lfr.a, lfr.b, lfr.c))
+    }
+
+    @method()
+    static finalExponentiation(a: FQ12): FQ12 {
+        let t1: FQ12 = {
+            x: BN256.negFQ6(a.x),
+            y: a.y,
+        }
+
+        const inv = BN256.inverseFQ12(a)
+        t1 = BN256.mulFQ12(t1, inv)
+
+        const t2 = BN256.frobeniusP2FQ12(t1)
+        t1 = BN256.mulFQ12(t1, t2)
+
+        let fp = BN256.frobeniusFQ12(t1)
+        let fp2 = BN256.frobeniusP2FQ12(t1)
+        let fp3 = BN256.frobeniusFQ12(fp2)
+        fp = BN256.modFQ12(fp)
+        fp2 = BN256.modFQ12(fp2)
+        fp3 = BN256.modFQ12(fp3)
+
+        const fu = BN256.expFQ12_u(t1)
+        const fu2 = BN256.expFQ12_u(fu)
+        const fu3 = BN256.expFQ12_u(fu2)
+
+        let y3 = BN256.frobeniusFQ12(fu)
+        const fu2p = BN256.frobeniusFQ12(fu2)
+        const fu3p = BN256.frobeniusFQ12(fu3)
+        const y2 = BN256.frobeniusP2FQ12(fu2)
+
+        let y0 = BN256.mulFQ12(fp, fp2)
+        y0 = BN256.mulFQ12(y0, fp3)
+
+        const y1 = BN256.conjugateFQ12(t1)
+        const y5 = BN256.conjugateFQ12(fu2)
+        y3 = BN256.conjugateFQ12(y3)
+        let y4 = BN256.mulFQ12(fu, fu2p)
+        y4 = BN256.conjugateFQ12(y4)
+
+        let y6 = BN256.mulFQ12(fu3, fu3p)
+        y6 = BN256.conjugateFQ12(y6)
+
+        let t0 = BN256.squareFQ12(y6)
+        t0 = BN256.modFQ12(t0)
+        t0 = BN256.mulFQ12(t0, y4)
+        t0 = BN256.mulFQ12(t0, y5)
+        t1 = BN256.mulFQ12(y3, y5)
+        t1 = BN256.mulFQ12(t1, t0)
+        t0 = BN256.mulFQ12(t0, y2)
+        t1 = BN256.squareFQ12(t1)
+        t1 = BN256.mulFQ12(t1, t0)
+        t1 = BN256.squareFQ12(t1)
+        t0 = BN256.mulFQ12(t1, y1)
+        t1 = BN256.mulFQ12(t1, y0)
+        t0 = BN256.squareFQ12(t0)
+        t0 = BN256.mulFQ12(t0, t1)
+        t0 = BN256.modFQ12(t0)
+
+        return t0
+    }
+
+    @method()
+    static _pair(g1: CurvePoint, g2: TwistPoint): FQ12 {
+        const e = BN256Pairing.miller(g2, g1)
+        let ret = BN256Pairing.finalExponentiation(e)
+
+        if (BN256.isInfTwistPoint(g2) || BN256.isInfCurvePoint(g1)) {
+            ret = BN256.FQ12One
+        }
+
+        return ret
+    }
+
+    @method()
+    static pair(g1: G1Point, g2: G2Point): FQ12 {
+        return BN256Pairing._pair(
+            BN256.createCurvePoint(g1),
+            BN256.createTwistPoint(g2)
+        )
+    }
+
+    @method()
+    static _pairCheckP4Precalc(
+        a0: CurvePoint,
+        b0: TwistPoint,
+        millerBetaAlpha: FQ12,
+        a2: CurvePoint,
+        b2: TwistPoint,
+        a3: CurvePoint,
+        b3: TwistPoint
+    ): boolean {
+        a0 = BN256.makeAffineCurvePoint(a0)
+        a2 = BN256.makeAffineCurvePoint(a2)
+        a3 = BN256.makeAffineCurvePoint(a3)
+
+        let acc = millerBetaAlpha
+
+        if (!BN256.isInfCurvePoint(a0) && !BN256.isInfTwistPoint(b0)) {
+            acc = BN256.mulFQ12(acc, BN256Pairing.miller(b0, a0))
+        }
+        acc = BN256.modFQ12(acc)
+        if (!BN256.isInfCurvePoint(a2) && !BN256.isInfTwistPoint(b2)) {
+            acc = BN256.mulFQ12(acc, BN256Pairing.miller(b2, a2))
+        }
+        acc = BN256.modFQ12(acc)
+        if (!BN256.isInfCurvePoint(a3) && !BN256.isInfTwistPoint(b3)) {
+            acc = BN256.mulFQ12(acc, BN256Pairing.miller(b3, a3))
+        }
+        acc = BN256.modFQ12(acc)
+
+        acc = BN256Pairing.finalExponentiation(acc)
+        acc = BN256.modFQ12(acc)
+
+        return acc == BN256.FQ12One
+    }
+
+    @method()
+    static pairCheckP4Precalc(
+        a0: G1Point,
+        b0: G2Point,
+        millerBetaAlpha: FQ12,
+        a2: G1Point,
+        b2: G2Point,
+        a3: G1Point,
+        b3: G2Point
+    ): boolean {
+        return BN256Pairing._pairCheckP4Precalc(
+            BN256.createCurvePoint(a0),
+            BN256.createTwistPoint(b0),
+            millerBetaAlpha,
+            BN256.createCurvePoint(a2),
+            BN256.createTwistPoint(b2),
+            BN256.createCurvePoint(a3),
+            BN256.createTwistPoint(b3)
+        )
+    }
+
+    @method()
+    static _pairCheckP2Precalc(
+        a0: CurvePoint,
+        b0: TwistPoint,
+        a1: CurvePoint,
+        b1: TwistPoint
+    ): boolean {
+        let acc = BN256.FQ12One
+
+        a0 = BN256.makeAffineCurvePoint(a0)
+        a1 = BN256.makeAffineCurvePoint(a1)
+
+        if (!BN256.isInfCurvePoint(a0) && !BN256.isInfTwistPoint(b0)) {
+            acc = BN256.mulFQ12(acc, BN256Pairing.miller(b0, a0))
+        }
+
+        if (!BN256.isInfCurvePoint(a1) && !BN256.isInfTwistPoint(b1)) {
+            acc = BN256.mulFQ12(acc, BN256Pairing.miller(b1, a1))
+        }
+
+        acc = BN256Pairing.finalExponentiation(acc)
+
+        return acc == BN256.FQ12One
+    }
+
+    @method()
+    static pairCheckP2Precalc(
+        a0: G1Point,
+        b0: G2Point,
+        a1: G1Point,
+        b1: G2Point
+    ): boolean {
+        return BN256Pairing._pairCheckP2Precalc(
+            BN256.createCurvePoint(a0),
+            BN256.createTwistPoint(b0),
+            BN256.createCurvePoint(a1),
+            BN256.createTwistPoint(b1)
+        )
+    }
+}
