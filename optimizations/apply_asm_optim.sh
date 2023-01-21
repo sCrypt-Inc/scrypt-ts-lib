@@ -15,5 +15,3 @@ apply() {
 
 # BN256
 apply scrypts/src/ec/bn256.scrypt optimizations/ec/bn256
-
-

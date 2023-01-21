@@ -950,7 +950,7 @@ export class BN256 extends SmartContractLib {
     }
 
     @method()
-    static addG1Point(a: G1Point, b: G1Point): G1Point {
+    static addG1Points(a: G1Point, b: G1Point): G1Point {
         const res = BN256.addCurvePoints(
             BN256.createCurvePoint(a),
             BN256.createCurvePoint(b)
@@ -1377,7 +1377,7 @@ export class BN256 extends SmartContractLib {
 
     @method()
     static isInfTwistPoint(a: TwistPoint): boolean {
-        return a.z == BN256.FQ2Zero
+        return a.z.x == BN256.FQ2Zero.x && a.z.y == BN256.FQ2Zero.y
     }
 
     @method()
@@ -2324,9 +2324,8 @@ export class BN256Pairing extends SmartContractLib {
         acc = BN256.modFQ12(acc)
 
         acc = BN256Pairing.finalExponentiation(acc)
-        acc = BN256.modFQ12(acc)
 
-        return acc == BN256.FQ12One
+        return BN256.compareFQ12(acc, BN256.FQ12One)
     }
 
     @method()

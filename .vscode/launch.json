@@ -35,6 +35,22 @@
       ],
       "preLaunchTask": "tsc: build - tsconfig.json",
       "outFiles": []
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Launch G16BN256 local test",
+      "skipFiles": ["<node_internals>/**", "**/node_modules/**"],
+      "resolveSourceMapLocations": ["!**/node_modules/**"],
+      "program": "${workspaceRoot}/node_modules/.bin/_mocha",
+      "args": [
+        "${workspaceRoot}/dist/tests/**/g16bn256.test.js",
+        "--colors",
+        "-t",
+        "1000000"
+      ],
+      "preLaunchTask": "tsc: build - tsconfig.json",
+      "outFiles": []
     }
   ]
 }
