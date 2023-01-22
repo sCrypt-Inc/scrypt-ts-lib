@@ -3,5 +3,5 @@ dist
 scrypts/
 scrypt.index.json
 tests/out
-tests/scrypt.index.json
+**/scrypt.index.json
 .eslintcache
