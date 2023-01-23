@@ -33,8 +33,8 @@ export class G16BN256 extends SmartContractLib {
     }
 
     @method()
-    //static verify(inputs: FixedArray<bigint, G16BN256.N>, proof: Proof, vk: VerifyingKey): boolean {
     static verify(
+        //inputs: FixedArray<bigint, G16BN256.N>,
         inputs: FixedArray<bigint, 1>,
         proof: Proof,
         vk: VerifyingKey
