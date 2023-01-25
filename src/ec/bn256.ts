@@ -59,10 +59,6 @@ export class BN256 extends SmartContractLib {
     // Key int size:
     @prop()
     static readonly S = 33n // 32 bytes plus sign byte
-    //@prop()
-    //static readonly mask: ByteString = reverseBytes(int2str(1n, 33n), 33);
-    //@prop()
-    //static readonly zero: ByteString = reverseBytes(int2str(0n, 33n), 33);
 
     // Upper bound of the eGCD mod inverse loop:
     @prop()

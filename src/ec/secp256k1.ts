@@ -30,14 +30,6 @@ export class SECP256K1 extends SmartContractLib {
     // Key int size:
     @prop()
     static readonly S = 3n // 32 bytes plus sign byte
-    @prop()
-    static readonly mask = toByteString(
-        '000000000000000000000000000000000000000000000000000000000000000001'
-    )
-    @prop()
-    static readonly zero = toByteString(
-        '000000000000000000000000000000000000000000000000000000000000000000'
-    )
 
     // Curve coefficients:
     @prop()
@@ -1104,7 +1096,7 @@ export class SECP256K1 extends SmartContractLib {
     ]
 
     @method()
-    static compratePoints(p: Point, q: Point): boolean {
+    static comparePoints(p: Point, q: Point): boolean {
         return p.x == q.x && p.y == q.y
     }
 
@@ -1131,7 +1123,7 @@ export class SECP256K1 extends SmartContractLib {
     @method()
     static modInverseEGCD(x: bigint, m: bigint): bigint {
         // This will get substituted by optimized ASM code at transpilation stage.
-        x = SECP256K1.modReduce(x, SECP256K1.P)
+        x = SECP256K1.modReduce(x, m)
 
         let t = 0n
         let newt = 1n
@@ -1232,7 +1224,7 @@ export class SECP256K1 extends SmartContractLib {
     }
 
     @method()
-    static multByScalar(p: Point, m: bigint): Point {
+    static mulByScalar(p: Point, m: bigint): Point {
         // Double and add method.
         // Lowest bit to highest.
         let q: Point = {
@@ -1253,7 +1245,7 @@ export class SECP256K1 extends SmartContractLib {
     }
 
     @method()
-    static multGeneratorByScalar(m: bigint): Point {
+    static mulGeneratorByScalar(m: bigint): Point {
         // Fixed-point scalar multiplication for the curve generator point.
         let q: Point = {
             x: 0n,
@@ -1274,9 +1266,11 @@ export class SECP256K1 extends SmartContractLib {
     static verifySig(data: ByteString, sig: Signature, pubKey: Point): boolean {
         // Hash message.
         const hash = hash256(data)
+
         const hashInt = unpack(
-            reverseBytes(hash, 32).concat(toByteString('00'))
-        ) // TODO
+            //reverseBytes(hash, 32) //.+(toByteString('00'))
+            reverseBytes(hash, 32) + toByteString('00')
+        )
 
         assert(
             sig.r >= 1n &&
@@ -1289,8 +1283,8 @@ export class SECP256K1 extends SmartContractLib {
         const u1 = SECP256K1.modReduce(hashInt * sInv, SECP256K1.n)
         const u2 = SECP256K1.modReduce(sig.r * sInv, SECP256K1.n)
 
-        const U1 = SECP256K1.multGeneratorByScalar(u1)
-        const U2 = SECP256K1.multByScalar(pubKey, u2)
+        const U1 = SECP256K1.mulGeneratorByScalar(u1)
+        const U2 = SECP256K1.mulByScalar(pubKey, u2)
         const X = SECP256K1.addPoints(U1, U2)
 
         return sig.r == X.x

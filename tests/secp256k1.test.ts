@@ -16,17 +16,17 @@ class SECP256K1Test extends SmartContract {
 
     @method()
     public addPoints(a: Point, b: Point, res: Point) {
-        assert(SECP256K1.compratePoints(SECP256K1.addPoints(a, b), res))
+        assert(SECP256K1.comparePoints(SECP256K1.addPoints(a, b), res))
     }
 
     @method()
     public doublePoint(a: Point, res: Point) {
-        assert(SECP256K1.compratePoints(SECP256K1.doublePoint(a), res))
+        assert(SECP256K1.comparePoints(SECP256K1.doublePoint(a), res))
     }
 
     @method()
-    public multByScalar(a: Point, scalar: bigint, res: Point) {
-        assert(SECP256K1.compratePoints(SECP256K1.multByScalar(a, scalar), res))
+    public mulByScalar(a: Point, scalar: bigint, res: Point) {
+        assert(SECP256K1.comparePoints(SECP256K1.mulByScalar(a, scalar), res))
     }
 
     @method()
@@ -87,8 +87,8 @@ describe('Test SECP256K1 curve', () => {
             y: 75448263006761690254333067386986994360219006523830525384389838619706472013787n,
         }
         const res: Point = {
-            x: 8879108468897347456765504195180429106657042111747195214479291905766592306780n,
-            y: 103169758018221136051263071890208008719561264786165717141949776060180262669451n,
+            x: 57251121133466528381687333847398244109424921342037248564188960353587837427174n,
+            y: 40883994999622267634940136474684226817206770737428544688339038642669647429872n,
         }
         const result = secp256k1test.verify((self) => {
             self.doublePoint(a, res)
@@ -123,7 +123,7 @@ describe('Test SECP256K1 curve', () => {
             y: 75448263006761690254333067386986994360219006523830525384389838619706472013787n,
         }
         const result = secp256k1test.verify((self) => {
-            self.verifySig(sig, data, pubKey, true)
+            self.verifySig(data, sig, pubKey, true)
         })
         expect(result.success, result.error).to.be.true
     })
