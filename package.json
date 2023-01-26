@@ -9,8 +9,7 @@
     "clean": "rimraf scrypt.index.json && rimraf dist && rimraf scrypts",
     "pretest": "npm run build",
     "apply-optim": "sh optimizations/apply_asm_optim.sh",
-    "test": "mocha 'dist/tests/**/*.test.js' --timeout 1200000",
-    "test-optim": "npm run build && npm run apply-optim && mocha 'dist/tests/**/*.test.js' --timeout 1200000",
+    "test": "npm run apply-optim && mocha 'dist/tests/**/*.test.js' --timeout 1200000",
     "lint": "eslint . --ext .js,.ts --fix && prettier --write --ignore-unknown \"**/*\"",
     "lint-check": "eslint . --ext .js,.ts && prettier --check --ignore-unknown \"**/*\"",
     "prepare": "husky install",
@@ -56,6 +55,7 @@
     "@typescript-eslint/eslint-plugin": "^5.48.1",
     "eslint-config-prettier": "^8.6.0",
     "husky": "^8.0.3",
-    "lint-staged": "^13.1.0"
+    "lint-staged": "^13.1.0",
+    "rabinsig": "^1.0.0"
   }
 }

@@ -12,4 +12,3 @@ os:
 
 script:
   - npm t
-  - npm run test-optim
