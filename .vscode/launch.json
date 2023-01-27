@@ -83,6 +83,22 @@
       ],
       "preLaunchTask": "tsc: build - tsconfig.json",
       "outFiles": []
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Launch MerklePath local test",
+      "skipFiles": ["<node_internals>/**", "**/node_modules/**"],
+      "resolveSourceMapLocations": ["!**/node_modules/**"],
+      "program": "${workspaceRoot}/node_modules/.bin/_mocha",
+      "args": [
+        "${workspaceRoot}/dist/tests/**/merklePath.test.js",
+        "--colors",
+        "-t",
+        "1000000"
+      ],
+      "preLaunchTask": "tsc: build - tsconfig.json",
+      "outFiles": []
     }
   ]
 }
