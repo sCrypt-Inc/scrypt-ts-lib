@@ -51,6 +51,38 @@
       ],
       "preLaunchTask": "tsc: build - tsconfig.json",
       "outFiles": []
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Launch RabinSignature local test",
+      "skipFiles": ["<node_internals>/**", "**/node_modules/**"],
+      "resolveSourceMapLocations": ["!**/node_modules/**"],
+      "program": "${workspaceRoot}/node_modules/.bin/_mocha",
+      "args": [
+        "${workspaceRoot}/dist/tests/**/rabinSignature.test.js",
+        "--colors",
+        "-t",
+        "1000000"
+      ],
+      "preLaunchTask": "tsc: build - tsconfig.json",
+      "outFiles": []
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Launch FRMath local test",
+      "skipFiles": ["<node_internals>/**", "**/node_modules/**"],
+      "resolveSourceMapLocations": ["!**/node_modules/**"],
+      "program": "${workspaceRoot}/node_modules/.bin/_mocha",
+      "args": [
+        "${workspaceRoot}/dist/tests/**/fractionMath.test.js",
+        "--colors",
+        "-t",
+        "1000000"
+      ],
+      "preLaunchTask": "tsc: build - tsconfig.json",
+      "outFiles": []
     }
   ]
 }
