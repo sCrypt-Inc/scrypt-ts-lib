@@ -17,7 +17,7 @@ export type Proof = {
 export class G16BN256 extends SmartContractLib {
     @method()
     static verify(
-        inputs: FixedArray<bigint, 1>,
+        inputs: FixedArray<bigint, 1>, // TODO: Make size adjustable by lib user.
         proof: Proof,
         vk: VerifyingKey
     ): boolean {
