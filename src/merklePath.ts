@@ -5,7 +5,6 @@ import {
     hash256,
     Sha256,
     FixedArray,
-    sha256,
 } from 'scrypt-ts'
 
 export type Node = {

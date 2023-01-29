@@ -1,12 +1,6 @@
 import { expect } from 'chai'
 import { RabinVerifier, RabinSig, RabinPubKey } from '../src/rabinSignature'
-import {
-    method,
-    assert,
-    SmartContract,
-    ByteString,
-    toByteString,
-} from 'scrypt-ts'
+import { method, assert, SmartContract, ByteString } from 'scrypt-ts'
 
 import { generatePrivKey, privKeyToPubKey, sign } from 'rabinsig'
 

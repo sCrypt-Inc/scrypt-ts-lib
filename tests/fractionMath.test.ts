@@ -1,5 +1,5 @@
 import { expect } from 'chai'
-import { method, assert, SmartContract, ByteString } from 'scrypt-ts'
+import { method, assert, SmartContract } from 'scrypt-ts'
 import { Fraction, FRMath } from '../src/fractionMath'
 
 class FRMathTest extends SmartContract {

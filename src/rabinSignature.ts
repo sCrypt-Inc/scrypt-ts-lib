@@ -1,11 +1,4 @@
-import {
-    ByteString,
-    len,
-    method,
-    sha256,
-    SmartContractLib,
-    Utils,
-} from 'scrypt-ts'
+import { ByteString, method, sha256, SmartContractLib, Utils } from 'scrypt-ts'
 
 export type RabinPubKey = bigint
 
