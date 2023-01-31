@@ -1,5 +1,5 @@
 import { expect } from 'chai'
-import { SECP256K1, Point, Signature } from '../src/ec/secp256k1'
+import { SECP256K1 } from '../src/ec/secp256k1'
 import {
     method,
     assert,
@@ -7,6 +7,8 @@ import {
     ByteString,
     toByteString,
 } from 'scrypt-ts'
+
+import { Point, Signature } from '../src/ec/misc'
 
 class SECP256K1Test extends SmartContract {
     @method()

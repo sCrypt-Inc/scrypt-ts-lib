@@ -1,3 +1,5 @@
 export { Mimc7 } from './hash/mimc7'
 export { BN256, BN256Pairing } from './ec/bn256'
 export { G16BN256 } from './zk/g16bn256'
+export { SECP256K1 } from './ec/secp256k1'
+export { SECP256R1 } from './ec/secp256r1'
