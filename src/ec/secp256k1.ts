@@ -1243,15 +1243,7 @@ export class SECP256K1 extends SmartContractLib {
     }
 
     @method()
-    static verifySig(data: ByteString, sig: Signature, pubKey: Point): boolean {
-        // Hash message.
-        const hash = hash256(data)
-
-        const hashInt = unpack(
-            //reverseBytes(hash, 32) //.+(toByteString('00'))
-            reverseBytes(hash, 32) + toByteString('00')
-        )
-
+    static verifySig(hashInt: bigint, sig: Signature, pubKey: Point): boolean {
         assert(
             sig.r >= 1n &&
                 sig.r < SECP256K1.n &&

@@ -1,12 +1,6 @@
 import { expect } from 'chai'
 import { SECP256R1 } from '../src/ec/secp256r1'
-import {
-    method,
-    assert,
-    SmartContract,
-    ByteString,
-    toByteString,
-} from 'scrypt-ts'
+import { method, assert, SmartContract } from 'scrypt-ts'
 
 import { Point, Signature } from '../src/ec/misc'
 
@@ -14,6 +8,16 @@ class SECP256R1Test extends SmartContract {
     @method()
     public modReduce(x: bigint, m: bigint, res: bigint) {
         assert(SECP256R1.modReduce(x, m) == res)
+    }
+
+    @method()
+    public modInverseBranchlessP(x: bigint, res: bigint) {
+        assert(SECP256R1.modInverseBranchlessP(x) == res)
+    }
+
+    @method()
+    public modInverseBranchlessN(x: bigint, res: bigint) {
+        assert(SECP256R1.modInverseBranchlessN(x) == res)
     }
 
     @method()
@@ -31,20 +35,22 @@ class SECP256R1Test extends SmartContract {
         assert(SECP256R1.comparePoints(SECP256R1.mulByScalar(a, scalar), res))
     }
 
-    //@method()
-    //public mulGeneratorByScalar(scalar: bigint, res: Point) {
-    //    assert(SECP256R1.comparePoints(SECP256R1.mulGeneratorByScalar(scalar), res))
-    //}
+    @method()
+    public mulGeneratorByScalar(scalar: bigint, res: Point) {
+        assert(
+            SECP256R1.comparePoints(SECP256R1.mulGeneratorByScalar(scalar), res)
+        )
+    }
 
-    //@method()
-    //public verifySig(
-    //    data: ByteString,
-    //    sig: Signature,
-    //    pubKey: Point,
-    //    res: boolean
-    //) {
-    //    assert(SECP256R1.verifySig(data, sig, pubKey) == res)
-    //}
+    @method()
+    public verifySig(
+        data: bigint,
+        sig: Signature,
+        pubKey: Point,
+        res: boolean
+    ) {
+        assert(SECP256R1.verifySig(data, sig, pubKey) == res)
+    }
 }
 
 describe('Test SECP256R1 curve', () => {
@@ -65,6 +71,26 @@ describe('Test SECP256R1 curve', () => {
     it('should pass modReduce negative', () => {
         const result = secp256k1test.verify((self) => {
             self.modReduce(-3128731n, 324n, 137n)
+        })
+        expect(result.success, result.error).to.be.true
+    })
+
+    it('should pass modInverseBranchlessP', () => {
+        const result = secp256k1test.verify((self) => {
+            self.modInverseBranchlessP(
+                40802486451600066635175967658552075212978434774817548508148599457490600604882n,
+                73262351829801099804208169817399223549782698313656863193450516152169854881764n
+            )
+        })
+        expect(result.success, result.error).to.be.true
+    })
+
+    it('should pass modInverseBranchlessN', () => {
+        const result = secp256k1test.verify((self) => {
+            self.modInverseBranchlessN(
+                112012499446190622784939685972077043133660998172726491381612386456067095620645n,
+                42241626791187032938017876722529433903127673708814335768640856847432533930276n
+            )
         })
         expect(result.success, result.error).to.be.true
     })
@@ -120,31 +146,33 @@ describe('Test SECP256R1 curve', () => {
         expect(result.success, result.error).to.be.true
     })
 
-    //it('should pass mulGeneratorByScalar', () => {
-    //    const scalar = 42109386089949602923027552840771321377424265038253004646151746506007960784117n
-    //    const res: Point = {
-    //        x: 28443150123515232814844709315923209175832628145571296565513283258006772229730n,
-    //        y: 51114096444803956509532026520592273725426220781201112639269749184509778144373n,
-    //    }
-    //    const result = secp256k1test.verify((self) => {
-    //        self.mulGeneratorByScalar(scalar, res)
-    //    })
-    //    expect(result.success, result.error).to.be.true
-    //})
+    it('should pass mulGeneratorByScalar', () => {
+        const scalar =
+            42109386089949602923027552840771321377424265038253004646151746506007960784117n
+        const res: Point = {
+            x: 28443150123515232814844709315923209175832628145571296565513283258006772229730n,
+            y: 51114096444803956509532026520592273725426220781201112639269749184509778144373n,
+        }
+        const result = secp256k1test.verify((self) => {
+            self.mulGeneratorByScalar(scalar, res)
+        })
+        expect(result.success, result.error).to.be.true
+    })
 
-    //it('should pass verifySig', () => {
-    //    const sig: Signature = {
-    //        r: 103008526977055580769878707005861355896836282185244080419270302085182966345575n,
-    //        s: 74732669050327306809812083832060425584323861303688425547351160250457167807857n,
-    //    }
-    //    const data = toByteString('3031323334353637383930313233343536373839303132333435363738393132')
-    //    const pubKey: Point = {
-    //        x: 29804352722577497140984840482578065216881301948347196128332561221631027762608n,
-    //        y: 55207735028932990506849077331206753512748620777006367755992841652478289887660n,
-    //    }
-    //    const result = secp256k1test.verify((self) => {
-    //        self.verifySig(data, sig, pubKey, true)
-    //    })
-    //    expect(result.success, result.error).to.be.true
-    //})
+    it('should pass verifySig', () => {
+        const sig: Signature = {
+            r: 15689690539660918387412104111702945490749343920374328062968298895183618966869n,
+            s: 99640955866492071400668323925677797144522837807923692112707154618646307984348n,
+        }
+        const data =
+            21797938705943676250364201203381343399167106211923824075541142215201130098994n
+        const pubKey: Point = {
+            x: 111588339727759101196927904647949293715017143087847122951040559135872845700759n,
+            y: 107198149497993853428046426044857056324132067226868984514169768422074768792003n,
+        }
+        const result = secp256k1test.verify((self) => {
+            self.verifySig(data, sig, pubKey, true)
+        })
+        expect(result.success, result.error).to.be.true
+    })
 })

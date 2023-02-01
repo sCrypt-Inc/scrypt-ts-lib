@@ -52,6 +52,10 @@ export class SECP256R1 extends SmartContractLib {
     @prop()
     static readonly DOUBLINGS_G: FixedArray<Point, 256> = [
         {
+            x: 48439561293906451759052585252797914202762949526041747995844080717082404635286n,
+            y: 36134250956749795798585127919587881956611106672985015071877198253568414405109n,
+        },
+        {
             x: 56515219790691171413109057904011688695424810155802929973526481321309856242040n,
             y: 3377031843712258259223711451491452598088675519751548567112458094635497583569n,
         },
@@ -1071,10 +1075,6 @@ export class SECP256R1 extends SmartContractLib {
             x: 54139800690483426297301952631437925110587960422887277029841182266555965057876n,
             y: 74115984295944166045948184427653282211014700048525035879938298669454420895743n,
         },
-        {
-            x: 5020455767449249521318142673103379929932104188174155071185162992986202608202n,
-            y: 74462411220784035193134971991304486214774552560095008269501393017494332267103n,
-        },
     ]
 
     @method()
@@ -1246,15 +1246,7 @@ export class SECP256R1 extends SmartContractLib {
     }
 
     @method()
-    static verifySig(data: ByteString, sig: Signature, pubKey: Point): boolean {
-        // Hash message.
-        const hash = hash256(data)
-
-        const hashInt = unpack(
-            //reverseBytes(hash, 32) //.+(toByteString('00'))
-            reverseBytes(hash, 32) + toByteString('00')
-        )
-
+    static verifySig(hashInt: bigint, sig: Signature, pubKey: Point): boolean {
         assert(
             sig.r >= 1n &&
                 sig.r < SECP256R1.n &&
