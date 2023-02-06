@@ -1,16 +1,11 @@
 import {
     and,
-    hash256,
     assert,
-    unpack,
-    reverseBytes,
     SmartContractLib,
     method,
     lshift,
     prop,
-    toByteString,
     FixedArray,
-    ByteString,
 } from 'scrypt-ts'
 
 import { Point, Signature } from './misc'
