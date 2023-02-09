@@ -39,13 +39,20 @@ describe('Test Shift10', () => {
         expect(result.success, result.error).to.be.true
     })
 
-    //it('should fail on negative integers pow', () => {
-    //    expect(() => {
-    //        shift10test.verify((self) => {
-    //            self.unlock(0n, -3n, OPS.pow, -1n)
-    //        })
-    //    }).to.throw(/Execution failed/)
-    //})
+    it('should pass pow 0', () => {
+        const result = shift10test.verify((self) => {
+            self.unlock(10n, 0n, OPS.pow, 1n)
+        })
+        expect(result.success, result.error).to.be.true
+    })
+
+    it('should fail on negative integers pow', () => {
+        expect(() => {
+            shift10test.verify((self) => {
+                self.unlock(0n, -3n, OPS.pow, -1n)
+            })
+        }).to.throw(/.*/)
+    })
 
     it('should pass shift left', () => {
         const result = shift10test.verify((self) => {

@@ -86,8 +86,7 @@ export class Shift10 extends SmartContractLib {
     // Return 10^n.
     @method()
     static pow(n: bigint): bigint {
-        // FAIL otherwise
-        assert(n <= 999n)
+        assert(n >= 0n && n <= 999n, 'pow not in range')
 
         return (
             Shift10.arr0[Number(n % 10n)] *
