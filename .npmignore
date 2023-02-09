@@ -1,7 +1,15 @@
+.github
+.husky
+.vscode
+optimizations
 src
 tests
 .gitignore
 node_modules
 scrypts/**/*
 !scrypts/**/*.scrypt
-!scrypt.index.json
+.eslintignore
+.eslintrc
+.prettierignore
+.prettierrc
+.travis.yml
