@@ -6,8 +6,8 @@ import {
     SmartContract,
     toByteString,
     hash256,
-    unpack,
-    reverseBytes,
+    byteString2Int,
+    reverseByteString,
 } from 'scrypt-ts'
 
 import { Point, Signature } from '../src/ec/misc'
@@ -126,9 +126,9 @@ describe('Test SECP256K1 curve', () => {
         // Hash message.
         const hash = hash256(data)
 
-        const hashInt = unpack(
-            //reverseBytes(hash, 32) //.+(toByteString('00'))
-            reverseBytes(hash, 32) + toByteString('00')
+        const hashInt = byteString2Int(
+            //reverseByteString(hash, 32) //.+(toByteString('00'))
+            reverseByteString(hash, 32) + toByteString('00')
         )
 
         const pubKey: Point = {
