@@ -6,13 +6,11 @@ src
 tests
 .gitignore
 node_modules
-scrypts/**/*
-!scrypts/src/**/*.scrypt
 .eslintcache
 .eslintignore
 .eslintrc
 .prettierignore
 .prettierrc
 .travis.yml
-dist/tests/**/*
+*.js.map
 
