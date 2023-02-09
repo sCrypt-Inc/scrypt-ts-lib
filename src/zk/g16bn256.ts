@@ -15,14 +15,17 @@ export type Proof = {
 }
 
 export class G16BN256 extends SmartContractLib {
+    // TODO: Make configurable
+    static readonly N = 1 // Number of public params
+
     @method()
     static verify(
-        inputs: FixedArray<bigint, 1>, // TODO: Make size adjustable by lib user.
+        inputs: FixedArray<bigint, typeof G16BN256.N>,
         proof: Proof,
         vk: VerifyingKey
     ): boolean {
         let vk_x = vk.gammaAbc[0]
-        for (let i = 0; i < 1; i++) {
+        for (let i = 0; i < G16BN256.N; i++) {
             const p = BN256.mulG1Point(vk.gammaAbc[i + 1], inputs[i])
             vk_x = BN256.addG1Points(vk_x, p)
         }

@@ -1,35 +1,18 @@
 import {
     and,
-    hash256,
     assert,
-    unpack,
-    reverseBytes,
     SmartContractLib,
     method,
     lshift,
     prop,
-    toByteString,
     FixedArray,
-    ByteString,
 } from 'scrypt-ts'
 
-export type Point = {
-    x: bigint
-    y: bigint
-}
-
-export type Signature = {
-    r: bigint
-    s: bigint
-}
+import { Point, Signature } from './misc'
 
 export class SECP256K1 extends SmartContractLib {
     @prop()
     static readonly CURVE_BITS = 256n
-
-    // Key int size:
-    @prop()
-    static readonly S = 3n // 32 bytes plus sign byte
 
     // Curve coefficients:
     @prop()
@@ -48,19 +31,11 @@ export class SECP256K1 extends SmartContractLib {
     @prop()
     static readonly n =
         115792089237316195423570985008687907852837564279074904382605163141518161494337n
-    @prop()
-    static readonly bn = toByteString(
-        '414136d08c5ed2bf3ba048afe6dcaebafeffffffffffffffffffffffffffffff'
-    ) // LE
 
     // Curve field value:
     @prop()
     static readonly P =
         115792089237316195423570985008687907853269984665640564039457584007908834671663n
-    @prop()
-    static readonly bP = toByteString(
-        '2ffcfffffeffffffffffffffffffffffffffffffffffffffffffffffffffffff'
-    ) // LE
 
     // Upper bound of the eGCD mod inverse loop:
     @prop()
@@ -1263,15 +1238,7 @@ export class SECP256K1 extends SmartContractLib {
     }
 
     @method()
-    static verifySig(data: ByteString, sig: Signature, pubKey: Point): boolean {
-        // Hash message.
-        const hash = hash256(data)
-
-        const hashInt = unpack(
-            //reverseBytes(hash, 32) //.+(toByteString('00'))
-            reverseBytes(hash, 32) + toByteString('00')
-        )
-
+    static verifySig(hashInt: bigint, sig: Signature, pubKey: Point): boolean {
         assert(
             sig.r >= 1n &&
                 sig.r < SECP256K1.n &&

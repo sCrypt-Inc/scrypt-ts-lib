@@ -113,7 +113,6 @@ export class Blockchain extends SmartContractLib {
     ): boolean {
         const bhHash = Blockchain.blockHeaderHashAsInt(bh)
         const target = Blockchain.bits2Target(bh.bits)
-        const hash = Blockchain.blockHeaderHash(bh)
         // Block hash below target and target below blockchain difficulty target.
         return bhHash <= target && target <= blockchainTarget
     }

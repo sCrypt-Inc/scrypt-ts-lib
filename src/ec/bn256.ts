@@ -305,8 +305,8 @@ export class BN256 extends SmartContractLib {
     @method()
     static mulXiFQ2(a: FQ2): FQ2 {
         // (xi+y)(i+3) = (9x+y)i+(9y-x)
-        const tx = lshift(a.x, 3n) + a.x + a.y
-        const ty = lshift(a.y, 3n) + a.y - a.x
+        const tx = 9n * a.x + a.y
+        const ty = 9n * a.y - a.x
 
         return {
             x: BN256.modReduce(tx, BN256.P),

@@ -18,3 +18,6 @@ apply scrypts/src/ec/bn256.scrypt optimizations/ec/bn256
 
 # SECP256K1
 apply scrypts/src/ec/secp256k1.scrypt optimizations/ec/secp256k1
+
+# SECP256R1
+apply scrypts/src/ec/secp256r1.scrypt optimizations/ec/secp256r1

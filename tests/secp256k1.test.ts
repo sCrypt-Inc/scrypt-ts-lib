@@ -1,12 +1,16 @@
 import { expect } from 'chai'
-import { SECP256K1, Point, Signature } from '../src/ec/secp256k1'
+import { SECP256K1 } from '../src/ec/secp256k1'
 import {
     method,
     assert,
     SmartContract,
-    ByteString,
     toByteString,
+    hash256,
+    byteString2Int,
+    reverseByteString,
 } from 'scrypt-ts'
+
+import { Point, Signature } from '../src/ec/misc'
 
 class SECP256K1Test extends SmartContract {
     @method()
@@ -31,12 +35,12 @@ class SECP256K1Test extends SmartContract {
 
     @method()
     public verifySig(
-        data: ByteString,
+        hashInt: bigint,
         sig: Signature,
         pubKey: Point,
         res: boolean
     ) {
-        assert(SECP256K1.verifySig(data, sig, pubKey) == res)
+        assert(SECP256K1.verifySig(hashInt, sig, pubKey) == res)
     }
 }
 
@@ -118,12 +122,21 @@ describe('Test SECP256K1 curve', () => {
             s: 54889175746748216520116204984872504778220436070200424770623145067226661913183n,
         }
         const data = toByteString('48656c6c6f2c20576f726c6421')
+
+        // Hash message.
+        const hash = hash256(data)
+
+        const hashInt = byteString2Int(
+            //reverseByteString(hash, 32) //.+(toByteString('00'))
+            reverseByteString(hash, 32) + toByteString('00')
+        )
+
         const pubKey: Point = {
             x: 96083606928850442804351952269956287851642904173087542938027188922799479777185n,
             y: 75448263006761690254333067386986994360219006523830525384389838619706472013787n,
         }
         const result = secp256k1test.verify((self) => {
-            self.verifySig(data, sig, pubKey, true)
+            self.verifySig(hashInt, sig, pubKey, true)
         })
         expect(result.success, result.error).to.be.true
     })
