@@ -7,9 +7,12 @@ tests
 .gitignore
 node_modules
 scrypts/**/*
-!scrypts/**/*.scrypt
+!scrypts/src/**/*.scrypt
+.eslintcache
 .eslintignore
 .eslintrc
 .prettierignore
 .prettierrc
 .travis.yml
+dist/tests/**/*
+
