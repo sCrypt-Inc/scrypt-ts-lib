@@ -24,6 +24,10 @@ class Shift10Test extends SmartContract {
     }
 }
 
+function randInt(min, max) {
+    return Math.random() * (max - min) + min
+}
+
 describe('Test Shift10', () => {
     let shift10test = undefined
 
@@ -33,8 +37,9 @@ describe('Test Shift10', () => {
     })
 
     it('should pass pow', () => {
+        const exp = randInt(0, 99)
         const result = shift10test.verify((self) => {
-            self.unlock(10n, 14n, OPS.pow, 10n ** 14n)
+            self.unlock(10n, BigInt(exp), OPS.pow, 10n ** BigInt(exp))
         })
         expect(result.success, result.error).to.be.true
     })
@@ -55,15 +60,19 @@ describe('Test Shift10', () => {
     })
 
     it('should pass shift left', () => {
+        const x = BigInt(randInt(0, 1000000000))
+        const shift = BigInt(randInt(0, 10))
         const result = shift10test.verify((self) => {
-            self.unlock(11189196n, 8n, OPS.left, 11189196n * 10n ** 8n)
+            self.unlock(x, shift, OPS.left, x * 10n ** shift)
         })
         expect(result.success, result.error).to.be.true
     })
 
     it('should pass shift right', () => {
+        const x = BigInt(randInt(0, 1000000000))
+        const shift = BigInt(randInt(0, 10))
         const result = shift10test.verify((self) => {
-            self.unlock(11189196n, 8n, OPS.right, 11189196n / 10n ** 8n)
+            self.unlock(x, shift, OPS.right, x / 10n ** shift)
         })
         expect(result.success, result.error).to.be.true
     })
