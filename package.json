@@ -14,7 +14,7 @@
     "lint": "eslint . --ext .js,.ts --fix && prettier --write --ignore-unknown \"**/*\"",
     "lint-check": "eslint . --ext .js,.ts && prettier --check --ignore-unknown \"**/*\"",
     "prepare": "husky install",
-    "prepublishOnly": "npm run build && npm run apply-optim"
+    "prepublishOnly": "npm run build"
   },
   "lint-staged": {
     "**/*": [
