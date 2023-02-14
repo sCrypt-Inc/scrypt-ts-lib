@@ -53,7 +53,7 @@ class SECP256R1Test extends SmartContract {
     }
 }
 
-describe('Test SECP256R1 curve', () => {
+describe('Heavy: Test SECP256R1 curve', () => {
     let secp256k1test = undefined
 
     before(async () => {

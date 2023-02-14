@@ -16,7 +16,7 @@ class G16BN256Test extends SmartContract {
     }
 }
 
-describe('Test G16 on BN256', () => {
+describe('Heavy: Test G16 on BN256', () => {
     let g16bn256test = undefined
 
     before(async () => {
