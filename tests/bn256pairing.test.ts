@@ -65,7 +65,7 @@ class BN256PairingTest extends SmartContract {
     }
 }
 
-describe('Test BN256 pairing', () => {
+describe('Heavy: Test BN256 pairing', () => {
     let bn256pairingTest = undefined
 
     before(async () => {

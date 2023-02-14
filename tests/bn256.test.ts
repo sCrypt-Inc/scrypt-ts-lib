@@ -139,7 +139,7 @@ class BN256Test extends SmartContract {
     }
 }
 
-describe('Test BN256 curve', () => {
+describe('Heavy: Test BN256 curve', () => {
     let bn256test = undefined
 
     before(async () => {
