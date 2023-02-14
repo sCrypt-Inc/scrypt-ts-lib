@@ -12,3 +12,10 @@ os:
 
 script:
   - npm t
+
+notifications:
+  slack:
+    rooms:
+      - secure: "TDRNp+76DZG3WIFT0OpLaS2z1SrTWpce2oeQAyRPYcfO6d/eXTFETv3hpgiLM73PjwsBruqD6qvxAhFWU8zq2lk7hCB6fgGCkhgN2spRE+IvjjxSjmpIG7iE7L2d/M4f/AMVBjK16LMgFjc+GfQPWnM2Y4zoCscTUIr6TTeAuGl3GJxDft8GAj5Si4HwjVVOJEExH85MYTX7zwoGGManNc4+VEqA9lR5nsHpGhvSBnMM9BCa5FVyOkCFRMfoGNFXQIUV5J54O7awgLkZmgxca8fhbVUSoltfB2/0W40/LIBKnnkUhux5qcQqGt2IfuXcZFPN+DCKPV11bFctaA5xiEM88HGDJZQuHiK08mVEUbIX2jsnrtOHBOUU98z9wPMtTqyc2ID/W/VbUpzTrghsz6wFez583mHKKDIU4B93GaOq9LrxFTZ1plUhTo0AMkmDxkwxiJI3/rG4j1KVihBcZuDcXqgRd8P+h/J4f+hulfG2JpJe92tuYbmeDIrI1AwstoK/Oz35IIUSrJ/j+0jEOjkrPWYU4bTtGacP5g22UbMqLG2t6bc/erfGns+h72jbcCmINW7zrNtQ5CCwDz1mmRgPXOIRVOP0pPgZDJKvNXjT9MweTz0rWkiA9h4+yFtTZD8+e4c8RPEpE0GDCNC6vBIeSGiIpioidkTFQG6Ns/I="
+    on_success: always
+    on_failure: always
