@@ -15,4 +15,5 @@ node_modules
 *.js.map
 tsconfig.json
 dist/tests
+scrypts/tests
 
