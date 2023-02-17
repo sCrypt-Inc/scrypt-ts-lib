@@ -12,3 +12,9 @@ os:
 
 script:
   - npm t
+
+notifications:
+  slack:
+    rooms:
+      - secure: kUy/p7g9qoDg4AGQBQWbM0ZXLnXCyerVnReR7kduPpzI4EH9y0Iod5K4DxHneODM+nJAtt7ecDywCrUj0+TUg9MDknP6C5DJtpZrciqUWswuHGBWdmjQ6UMQkezGCCNF+EQEaZ5qCzeMvyFf/34HUNnvmUR7uZ3tFGTL8N/quNsCw3vkKrd7uZkFFwc/n+9RMm1nmNa+4k5C3UuaR4yfZ2jel8aQ7qBsNX9QEypn9E58tnk3I+MLvJgtjNFpHGRou+uARJ+JmuMhclL8c2TV1WUwRVNptTj98pzSUMzImkNLeueulmE5qUZxy3aWfvAHuxruORhjcVgP4qWQ1qMhUB4RDRfP/KywVcsbfFPkpY1XD1XI744HTZxsvnGJomGbD0v5v185nNRj0ZGeVEL4OKYNs4k/yXaLrPltoM37tjTpjpcbuNVfe+5D9ye/w5hj7l+rPihj384EuA2xMA/DWcMLiaV1Gqds2XVB8E49lj8/vfHMQpWBiph5SrQjHTndgIGTe0sQVoxim7m3K+H4zTPNBnWC8mXa7u6oMHzJNVe66uxrukQUOaI0WoEbEF2BKirv/GXmtHXRsuva8N2AFAQYaigK3yKRHd5Wpr382C9BUs4Cfs9VpXNZ0LJIqVbUmDUuG/SbqD46SiPfaGqx6fiL91vJcUcVjjJjMx15j+8=
+    on_success: change
