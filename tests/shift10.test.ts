@@ -1,7 +1,7 @@
 import { expect } from 'chai'
 import { Shift10 } from '../src/shift10'
 import { method, assert, SmartContract } from 'scrypt-ts'
-
+import bigintRnd from 'bigint-rnd'
 const OPS = {
     pow: 0n,
     left: 1n,
@@ -25,7 +25,7 @@ class Shift10Test extends SmartContract {
 }
 
 function randInt(min, max) {
-    return Math.random() * (max - min) + min
+    return bigintRnd(min, max)
 }
 
 describe('Test Shift10', () => {
@@ -37,7 +37,7 @@ describe('Test Shift10', () => {
     })
 
     it('should pass pow', () => {
-        const exp = randInt(0, 99)
+        const exp = randInt(1, 99)
         const result = shift10test.verify((self) => {
             self.unlock(10n, BigInt(exp), OPS.pow, 10n ** BigInt(exp))
         })
@@ -60,8 +60,8 @@ describe('Test Shift10', () => {
     })
 
     it('should pass shift left', () => {
-        const x = BigInt(randInt(0, 1000000000))
-        const shift = BigInt(randInt(0, 10))
+        const x = BigInt(randInt(1, 1000000000))
+        const shift = BigInt(randInt(1, 10))
         const result = shift10test.verify((self) => {
             self.unlock(x, shift, OPS.left, x * 10n ** shift)
         })
@@ -69,8 +69,8 @@ describe('Test Shift10', () => {
     })
 
     it('should pass shift right', () => {
-        const x = BigInt(randInt(0, 1000000000))
-        const shift = BigInt(randInt(0, 10))
+        const x = BigInt(randInt(1, 1000000000))
+        const shift = BigInt(randInt(1, 10))
         const result = shift10test.verify((self) => {
             self.unlock(x, shift, OPS.right, x / 10n ** shift)
         })
