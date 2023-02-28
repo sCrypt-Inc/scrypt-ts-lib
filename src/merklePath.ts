@@ -26,13 +26,13 @@ export class MerklePath extends SmartContractLib {
     static readonly DEPTH: bigint = 32n // TODO: Make configurable by lib user.
 
     @prop()
-    static readonly INVALID_NODE = 0n
+    static readonly INVALID_NODE: bigint = 0n
 
     @prop()
-    static readonly LEFT_NODE = 1n
+    static readonly LEFT_NODE: bigint = 1n
 
     @prop()
-    static readonly RIGHT_NODE = 2n
+    static readonly RIGHT_NODE: bigint = 2n
 
     // According to the given leaf node and merkle path, calculate the hash of the root node of the merkle tree.
     @method()

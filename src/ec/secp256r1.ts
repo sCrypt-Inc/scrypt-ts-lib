@@ -11,15 +11,14 @@ import {
 import { Point, Signature } from './misc'
 
 export class SECP256R1 extends SmartContractLib {
-    @prop()
-    static readonly CURVE_BITS = 256n
+    static readonly CURVE_BITS = 256
 
     // Curve coefficients:
     @prop()
-    static readonly a =
+    static readonly a: bigint =
         115792089210356248762697446949407573530086143415290314195533631308867097853948n
     @prop()
-    static readonly b =
+    static readonly b: bigint =
         41058363725152142129326129780047268409114441015993725554835256314039467401291n
 
     // Generator point:
@@ -31,17 +30,16 @@ export class SECP256R1 extends SmartContractLib {
 
     // Curve order:
     @prop()
-    static readonly n =
+    static readonly n: bigint =
         115792089210356248762697446949407573529996955224135760342422259061068512044369n
 
     // Curve field value:
     @prop()
-    static readonly P =
+    static readonly P: bigint =
         115792089210356248762697446949407573530086143415290314195533631308867097853951n
 
     // Upper bound of the eGCD mod inverse loop:
-    @prop()
-    static readonly UB = 368n
+    static readonly UB = 368
 
     // Precalculated doublings for the generator point
     @prop()
@@ -1109,7 +1107,7 @@ export class SECP256R1 extends SmartContractLib {
 
         let quotient = 0n
         let tmp = 0n
-        for (let i = 0; i < SECP256R1.UB; i++) {
+        for (let i = 0; i < 368; i++) {
             if (newr != 0n) {
                 quotient = r / newr
 

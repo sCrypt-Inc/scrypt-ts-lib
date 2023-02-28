@@ -11,14 +11,13 @@ import {
 import { Point, Signature } from './misc'
 
 export class SECP256K1 extends SmartContractLib {
-    @prop()
-    static readonly CURVE_BITS = 256n
+    static readonly CURVE_BITS = 256
 
     // Curve coefficients:
     @prop()
-    static readonly a = 0n
+    static readonly a: bigint = 0n
     @prop()
-    static readonly b = 7n
+    static readonly b: bigint = 7n
 
     // Generator point:
     @prop()
@@ -29,17 +28,16 @@ export class SECP256K1 extends SmartContractLib {
 
     // Curve order:
     @prop()
-    static readonly n =
+    static readonly n: bigint =
         115792089237316195423570985008687907852837564279074904382605163141518161494337n
 
     // Curve field value:
     @prop()
-    static readonly P =
+    static readonly P: bigint =
         115792089237316195423570985008687907853269984665640564039457584007908834671663n
 
     // Upper bound of the eGCD mod inverse loop:
-    @prop()
-    static readonly UB = 368n
+    static readonly UB = 368
 
     // Precalculated doublings for the generator point
     @prop()

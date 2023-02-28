@@ -1,4 +1,3 @@
-import { assert } from 'console'
 import {
     prop,
     method,
@@ -9,6 +8,7 @@ import {
     ByteString,
     toByteString,
     rshift,
+    assert,
 } from 'scrypt-ts'
 import { MerkleProof, MerklePath } from './merklePath'
 
