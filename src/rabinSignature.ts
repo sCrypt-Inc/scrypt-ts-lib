@@ -28,3 +28,28 @@ export class RabinVerifier extends SmartContractLib {
         return (sig.s * sig.s) % pubKey == h % pubKey
     }
 }
+
+export class RabinVerifierWOC extends SmartContractLib {
+    // Rabin signature verifier for WitnessOnChain.
+    // https://witnessonchain.com
+
+    @method()
+    static hash(x: ByteString): ByteString {
+        // expand into 3072 bit hash
+        let hx: ByteString = sha256(x)
+        for (let i = 0; i < 11; i++) {
+            hx += sha256(hx)
+        }
+        return hx
+    }
+
+    @method()
+    static verifySig(
+        msg: ByteString,
+        sig: RabinSig,
+        pubKey: RabinPubKey
+    ): boolean {
+        const h = Utils.fromLEUnsigned(RabinVerifierWOC.hash(msg + sig.padding))
+        return (sig.s * sig.s) % pubKey == h % pubKey
+    }
+}
