@@ -11,7 +11,7 @@
     "pretest": "npm run build",
     "apply-optim": "sh optimizations/apply_asm_optim.sh",
     "test": "mocha 'dist/tests/**/*.test.js' --timeout 1200000 -i -f 'Heavy'",
-    "test-all": "mocha 'dist/tests/**/*.test.js' --timeout 1200000",
+    "test-all": "npm run pretest && mocha 'dist/tests/**/*.test.js' --timeout 1200000",
     "lint": "eslint . --ext .js,.ts --fix && prettier --write --ignore-unknown \"**/*\"",
     "lint-check": "eslint . --ext .js,.ts && prettier --check --ignore-unknown \"**/*\"",
     "prepare": "husky install",
