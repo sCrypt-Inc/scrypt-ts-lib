@@ -11,7 +11,7 @@ os:
   - windows
 
 script:
-  - npm t
+  - npm run test-all
 
 notifications:
   slack:
