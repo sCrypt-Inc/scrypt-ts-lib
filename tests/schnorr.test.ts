@@ -1,29 +1,27 @@
-import { expect } from 'chai'
-import * as elliptic from 'elliptic'
+import { expect, use } from 'chai'
+import chaiAsPromised from 'chai-as-promised'
+use(chaiAsPromised)
+
 import {
     assert,
     bsv,
     ByteString,
     method,
     PubKey,
-    Sig,
     SmartContract,
+    toByteString,
     toHex,
 } from 'scrypt-ts'
 import { Point } from '../src/ec/misc'
 import { Schnorr } from '../src/schnorr'
 
-const EC = elliptic.ec
-const ec = new EC('secp256k1')
-
-const p = ec.curve.p
 const G = bsv.crypto.Point.getG()
 const N = bsv.crypto.Point.getN()
 
 class SchnorrTest extends SmartContract {
     @method()
     public test(
-        sig: Sig,
+        sig: ByteString,
         pubKey: PubKey,
         msg: ByteString,
         R: Point,
@@ -35,14 +33,14 @@ class SchnorrTest extends SmartContract {
 
 describe('Heavy: Test  contract "Schnorr"', () => {
     const pk = bsv.PrivateKey.fromRandom('testnet')
-    const publicKey = new bsv.PublicKey(pk.publicKey, {
+    const publicKey = new bsv.PublicKey(pk.publicKey.point, {
         compressed: false,
         network: 'testnet',
     })
 
     let X, sig, m, st, result
 
-    before(() => {
+    before(async () => {
         m = Buffer.from('test schnorr BitcoinSV')
 
         const sha256Data = bsv.crypto.Hash.sha256(m)
@@ -70,7 +68,7 @@ describe('Heavy: Test  contract "Schnorr"', () => {
             Buffer.from(s.toBuffer(), 'hex'),
         ])
 
-        SchnorrTest.compile()
+        await SchnorrTest.compile()
 
         X = {
             x: BigInt(R.getX().toString()),
@@ -78,5 +76,66 @@ describe('Heavy: Test  contract "Schnorr"', () => {
         }
 
         st = new SchnorrTest()
+    })
+
+    it('should call unlock successfully', () => {
+        const result = st.verify((self) => {
+            self.test(toHex(sig), PubKey(toHex(publicKey)), toHex(m), X, true)
+        })
+        expect(result.success, result.error).to.be.true
+    })
+
+    it('should fail w invalid publicKeyX', () => {
+        const wrongPk = bsv.PrivateKey.fromRandom('testnet')
+        const wrongPublicKey = new bsv.PublicKey(wrongPk.publicKey.point, {
+            compressed: false,
+            network: 'testnet',
+        })
+
+        const result = st.verify((self) => {
+            self.test(
+                toHex(sig),
+                PubKey(toHex(wrongPublicKey)),
+                toHex(m),
+                X,
+                false
+            )
+        })
+        expect(result.success, result.error).to.be.true
+    })
+
+    it('should fail w invalid message', () => {
+        const result = st.verify((self) => {
+            self.test(
+                toHex(sig),
+                PubKey(toHex(publicKey)),
+                toHex(m) + toByteString('11'),
+                X,
+                false
+            )
+        })
+    })
+
+    it('should fail w invalid sig', () => {
+        const wrongSig = Buffer.concat([
+            Buffer.from(
+                '1111113c7c06fb73bc019fc657aaa3f4e48287649fb9fff8bb54b148d9b8fe9a',
+                'hex'
+            ),
+            Buffer.from(
+                '000000953a35e8424a7f2afdcefcae68130d3e19884fce8bb802b9cc6b9776d6',
+                'hex'
+            ),
+        ])
+
+        const result = st.verify((self) => {
+            self.test(
+                toHex(wrongSig),
+                PubKey(toHex(publicKey)),
+                toHex(m),
+                X,
+                false
+            )
+        })
     })
 })
