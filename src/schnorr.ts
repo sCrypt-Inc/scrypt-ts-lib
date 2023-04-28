@@ -6,7 +6,6 @@ import {
     PubKey,
     reverseByteString,
     sha256,
-    Sig,
     SmartContractLib,
     toByteString,
     Utils,
@@ -39,7 +38,7 @@ export class Schnorr extends SmartContractLib {
     // s * G = R + hash(r, P, m) * P
     @method()
     static verify(
-        sig: Sig,
+        sig: ByteString,
         pubKey: PubKey,
         msg: ByteString,
         R: Point
