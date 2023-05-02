@@ -6,6 +6,11 @@ import {
     lshift,
     prop,
     FixedArray,
+    PubKey,
+    toByteString,
+    Utils,
+    reverseByteString,
+    ByteString,
 } from 'scrypt-ts'
 
 import { Point, Signature } from './misc'
@@ -1236,6 +1241,42 @@ export class SECP256R1 extends SmartContractLib {
         }
 
         return q
+    }
+
+    // Convert a public key to a point, assuming it's uncompressed.
+    @method()
+    static pubKey2Point(pubKey: PubKey): Point {
+        assert(
+            pubKey.slice(0, 2) == toByteString('04'),
+            'Pub key isn\'t prefixed with "04". This likely means, that it\'s not in compressed form.'
+        )
+        // Convert signed little endian to unsigned big endian.
+        const x = Utils.fromLEUnsigned(
+            reverseByteString(pubKey.slice(2, 66), 32)
+        )
+        const y = Utils.fromLEUnsigned(
+            reverseByteString(pubKey.slice(66, 130), 32)
+        )
+        return {
+            x: x,
+            y: y,
+        }
+    }
+
+    // Serialize Point object to PubKey of uncompressed form.
+    @method()
+    static point2PubKey(point: Point): PubKey {
+        return PubKey(
+            toByteString('04') +
+                SECP256R1.toBEUnsigned32(point.x) +
+                SECP256R1.toBEUnsigned32(point.y)
+        )
+    }
+
+    @method()
+    static toBEUnsigned32(n: bigint): ByteString {
+        const m = Utils.toLEUnsigned(n, 32n)
+        return reverseByteString(m, 32)
     }
 
     @method()

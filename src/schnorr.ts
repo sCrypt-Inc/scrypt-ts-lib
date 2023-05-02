@@ -15,26 +15,6 @@ import { SECP256K1 } from './ec/secp256k1'
 
 // Schnorr signatures verification for secp256k1
 export class Schnorr extends SmartContractLib {
-    // Convert a public key to a point, assuming it's uncompressed.
-    @method()
-    static pubKey2Point(pubKey: PubKey): Point {
-        assert(
-            pubKey.slice(0, 2) == toByteString('04'),
-            'Pub key isn\'t prefixed with "04"'
-        )
-        // Convert signed little endian to unsigned big endian.
-        const x = Utils.fromLEUnsigned(
-            reverseByteString(pubKey.slice(2, 66), 32)
-        )
-        const y = Utils.fromLEUnsigned(
-            reverseByteString(pubKey.slice(66, 130), 32)
-        )
-        return {
-            x: x,
-            y: y,
-        }
-    }
-
     // s * G = R + hash(r, P, m) * P
     @method()
     static verify(
@@ -55,7 +35,7 @@ export class Schnorr extends SmartContractLib {
         e = SECP256K1.modReduce(e, SECP256K1.n)
 
         // E = e * P
-        const P = Schnorr.pubKey2Point(pubKey)
+        const P = SECP256K1.pubKey2Point(pubKey)
         const E = SECP256K1.mulByScalar(P, e)
 
         // A = R + E
