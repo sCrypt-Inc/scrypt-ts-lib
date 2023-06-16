@@ -3,8 +3,8 @@ dist/
 out/
 test/out/
 test/dist
-test/scrypts
-scrypts/
+test/artifacts
+artifacts/
 optimizations/
 **/.env
 **/scrypt.index.json

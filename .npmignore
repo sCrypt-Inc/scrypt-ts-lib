@@ -15,7 +15,7 @@
 tsconfig.json
 /dist/tests
 /dist/src/**/*.js.map
-/scrypts/tests
-/scrypts/src/**/*.scrypt.map
-/scrypts/src/**/*.json
+/artifacts/tests
+/artifacts/src/**/*.scrypt.map
+/artifacts/src/**/*.json
 

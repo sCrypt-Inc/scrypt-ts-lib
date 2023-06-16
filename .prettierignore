@@ -3,8 +3,8 @@
 **/out/
 **/test/out/
 **/test/dist
-**/test/scrypts
-**/scrypts/
+**/test/artifacts
+**/artifacts/
 **/.env
 **/scrypt.index.json
 **/.vscode/*
