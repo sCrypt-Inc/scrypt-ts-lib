@@ -6,10 +6,10 @@
   "main": "dist/src/index.js",
   "scripts": {
     "prebuild": "npm run clean",
-    "build": "tsc && npm run apply-optim",
+    "build": "tsc && npm run apply-asm",
     "clean": "rimraf scrypt.index.json && rimraf dist && rimraf artifacts",
     "pretest": "npm run build",
-    "apply-optim": "node optimizations/apply_asm.js",
+    "apply-asm": "node .asm/apply_asm.js",
     "test": "mocha 'dist/tests/**/*.test.js' --timeout 1200000 -i -f 'Heavy'",
     "test-all": "npm run pretest && mocha 'dist/tests/**/*.test.js' --timeout 1200000",
     "lint": "eslint . --ext .js,.ts --fix && prettier --write --ignore-unknown \"**/*\"",
