@@ -11,6 +11,7 @@ export {
     RabinVerifierWOC,
 } from './rabinSignature'
 export { Fraction, FRMath } from './fractionMath'
+export { BlockHeader, Blockchain } from './blockchain'
 export { MerklePath, MerkleProof, Node } from './merklePath'
 export { Shift10 } from './shift10'
 export { ArrayUtils } from './arrayUtils'
