@@ -7,8 +7,9 @@ import {
     Utils,
     ByteString,
     toByteString,
-    rshift,
     assert,
+    slice,
+    lshift,
 } from 'scrypt-ts'
 import { MerkleProof, MerklePath } from './merklePath'
 
@@ -51,13 +52,10 @@ export class Blockchain extends SmartContractLib {
             const node = merkleProof[i]
 
             if (node.pos != MerklePath.INVALID_NODE) {
-                // s is valid
-                // If node on the merkle path is on the right, it must be a duplicate.
-                // If node on the merkle path is on the left, it must NOT be a duplicate.
-                if (
-                    (node.pos != MerklePath.LEFT_NODE && node.hash != root) ||
-                    (node.pos == MerklePath.LEFT_NODE && node.hash == root)
-                ) {
+                // IF LAST ELEMENT:
+                // - A non-duplicate node cannot ever be on the right.
+                const isDuplicate = node.hash == root
+                if (!isDuplicate && node.pos == MerklePath.RIGHT_NODE) {
                     last = false
                 }
 
@@ -72,42 +70,45 @@ export class Blockchain extends SmartContractLib {
         return last && root == bh.merkleRoot
     }
 
-    // Calculate a tx's index in a block from its merkle path.
-    // Goes from top to bottom, the path basically encodes the index in binary form.
-    // left/L means 1, and right/R 0: e.g., (L, R, L) denotes 101 in binary, and 5 in decimal
-    @method()
-    static txIndex(merkleProof: MerkleProof): bigint {
-        let sum = 0n
+    // TODO:
+    // The function below assumes there cannot be any duplicate nodes on the left-hand side,
+    // which is false.
+    //// Calculate a tx's index in a block from its merkle path.
+    //// Goes from top to bottom, the path basically encodes the index in binary form.
+    //// left/L means 1, and right/R 0: e.g., (L, R, L) denotes 101 in binary, and 5 in decimal
+    //@method()
+    //static txIndex(merkleProof: MerkleProof): bigint {
+    //    let sum = 0n
 
-        // traverse the path from top to bottom
-        for (let i = 0; i < MerklePath.DEPTH; i++) {
-            const node = merkleProof[Number(MerklePath.DEPTH) - i - 1]
+    //    // traverse the path from top to bottom
+    //    for (let i = 0; i < MerklePath.DEPTH; i++) {
+    //        const node = merkleProof[Number(MerklePath.DEPTH) - i - 1]
 
-            if (node.pos != MerklePath.INVALID_NODE) {
-                sum *= 2n
-                if (node.pos == MerklePath.LEFT_NODE) {
-                    sum++
-                }
-            }
-        }
-        return sum
-    }
+    //        if (node.pos != MerklePath.INVALID_NODE) {
+    //            sum *= 2n
+    //            if (node.pos == MerklePath.LEFT_NODE) {
+    //                sum++
+    //            }
+    //        }
+    //    }
+    //    return sum
+    //}
 
-    // Get number of transactions in a block.
-    @method()
-    static blockTxCount(
-        bh: BlockHeader,
-        lastTxid: Sha256,
-        merkleProof: MerkleProof
-    ): bigint {
-        // Ensure this tx is indeed the last one.
-        assert(Blockchain.lastTxInBlock(lastTxid, bh, merkleProof))
-        return Blockchain.txIndex(merkleProof) + 1n
-    }
+    //// Get number of transactions in a block.
+    //@method()
+    //static blockTxCount(
+    //    bh: BlockHeader,
+    //    lastTxid: Sha256,
+    //    merkleProof: MerkleProof
+    //): bigint {
+    //    // Ensure this tx is indeed the last one.
+    //    assert(Blockchain.lastTxInBlock(lastTxid, bh, merkleProof))
+    //    return Blockchain.txIndex(merkleProof) + 1n
+    //}
 
     // Is block header valid with difficulty meeting target.
     @method()
-    static isBlockHeaderValid(
+    static isValidBlockHeader(
         bh: BlockHeader,
         blockchainTarget: bigint
     ): boolean {
@@ -124,12 +125,12 @@ export class Blockchain extends SmartContractLib {
     @method()
     static isCoinbase(tx: ByteString): boolean {
         return (
-            tx.slice(4, 5) == toByteString('01') && // only 1 input
-            tx.slice(5, 37) ==
+            slice(tx, 4n, 5n) == toByteString('01') && // only 1 input
+            slice(tx, 5n, 37n) ==
                 toByteString(
                     '0000000000000000000000000000000000000000000000000000000000000000'
                 ) && // null txid: all zeros
-            tx.slice(37, 41) == toByteString('FFFFFFFF')
+            slice(tx, 37n, 41n) == toByteString('ffffffff')
         ) // null vout: all Fs
     }
 
@@ -155,18 +156,18 @@ export class Blockchain extends SmartContractLib {
     @method()
     static readBlockHeight(coinbaseTx: ByteString): bigint {
         // Block height is at the beginning of the unlocking script and encoded in varint.
-        // TODO
-        //return Utils.fromLEUnsigned(Utils.readVarint(coinbaseTx.slice(BLOCK_HEIGHT_POS))
-        return 0n
+        return Utils.fromLEUnsigned(
+            Utils.readVarint(slice(coinbaseTx, Blockchain.BLOCK_HEIGHT_POS))
+        )
     }
 
     // Convert difficulty from bits to target.
     @method()
     static bits2Target(bits: ByteString): bigint {
-        const exponent = Utils.fromLEUnsigned(bits.slice(3, 4))
-        const coefficient = Utils.fromLEUnsigned(bits.slice(0, 3))
+        const exponent = Utils.fromLEUnsigned(slice(bits, 3n))
+        const coefficient = Utils.fromLEUnsigned(slice(bits, 0n, 3n))
         const n = 8n * (exponent - 3n)
-        return rshift(coefficient, n)
+        return lshift(coefficient, n)
     }
 
     // Serialize a block header.
@@ -185,7 +186,7 @@ export class Blockchain extends SmartContractLib {
     // Block header hash.
     @method()
     static blockHeaderHash(bh: BlockHeader): Sha256 {
-        return Sha256(hash256(Blockchain.serialize(bh)))
+        return hash256(Blockchain.serialize(bh))
     }
 
     // Block header hash, but converted to a positive integer.

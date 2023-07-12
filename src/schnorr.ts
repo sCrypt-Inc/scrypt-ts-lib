@@ -25,12 +25,13 @@ export class Schnorr extends SmartContractLib {
     ): boolean {
         const r: ByteString = sig.slice(0, 64) // First 32 bytes
         const s = byteString2Int(
-            reverseByteString(sig.slice(64, 128), 32) + toByteString('00')
+            reverseByteString(sig.slice(64, 128), 32n) + toByteString('00')
         )
 
         // e = Hash(r || P || msg)
         let e = byteString2Int(
-            reverseByteString(sha256(r + pubKey + msg), 32) + toByteString('00')
+            reverseByteString(sha256(r + pubKey + msg), 32n) +
+                toByteString('00')
         )
         e = SECP256K1.modReduce(e, SECP256K1.n)
 

@@ -18,7 +18,7 @@ export type Node = {
     pos: bigint
 }
 
-export type MerkleProof = FixedArray<Node, 32>
+export type MerkleProof = FixedArray<Node, 32> // If shorter than 32, pad with invalid nodes.
 
 export class MerklePath extends SmartContractLib {
     // Maximal depth of a Merkle tree/path, which can support a block with 2^32 transactions.

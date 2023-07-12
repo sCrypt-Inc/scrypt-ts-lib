@@ -1249,10 +1249,10 @@ export class SECP256K1 extends SmartContractLib {
         )
         // Convert signed little endian to unsigned big endian.
         const x = Utils.fromLEUnsigned(
-            reverseByteString(pubKey.slice(2, 66), 32)
+            reverseByteString(pubKey.slice(2, 66), 32n)
         )
         const y = Utils.fromLEUnsigned(
-            reverseByteString(pubKey.slice(66, 130), 32)
+            reverseByteString(pubKey.slice(66, 130), 32n)
         )
         return {
             x: x,
@@ -1273,7 +1273,7 @@ export class SECP256K1 extends SmartContractLib {
     @method()
     static toBEUnsigned32(n: bigint): ByteString {
         const m = Utils.toLEUnsigned(n, 32n)
-        return reverseByteString(m, 32)
+        return reverseByteString(m, 32n)
     }
 
     @method()

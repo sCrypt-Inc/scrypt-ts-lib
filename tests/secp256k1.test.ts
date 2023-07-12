@@ -127,8 +127,8 @@ describe('Heavy: Test SECP256K1 curve', () => {
         const hash = hash256(data)
 
         const hashInt = byteString2Int(
-            //reverseByteString(hash, 32) //.+(toByteString('00'))
-            reverseByteString(hash, 32) + toByteString('00')
+            //reverseByteString(hash, 32n) //.+(toByteString('00'))
+            reverseByteString(hash, 32n) + toByteString('00')
         )
 
         const pubKey: Point = {
