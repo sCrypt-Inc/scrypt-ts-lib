@@ -1,20 +1,8 @@
 import { expect } from 'chai'
 import { FQ12 } from '../src/ec/bn256'
-
-import { G16BN256, Proof, VerifyingKey } from '../src/zk/g16bn256'
-
-import { method, assert, SmartContract, FixedArray } from 'scrypt-ts'
-
-class G16BN256Test extends SmartContract {
-    @method()
-    public verifyProof(
-        inputs: FixedArray<bigint, 1>,
-        proof: Proof,
-        vk: VerifyingKey
-    ) {
-        assert(G16BN256.verify(inputs, proof, vk))
-    }
-}
+import { G16BN256Test } from './contracts/G16BN256Test'
+import { Proof, VerifyingKey } from '../src/zk/g16bn256'
+import { FixedArray } from 'scrypt-ts'
 
 describe('Heavy: Test G16 on BN256', () => {
     let g16bn256test = undefined

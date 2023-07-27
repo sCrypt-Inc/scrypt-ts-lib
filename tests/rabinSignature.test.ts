@@ -1,41 +1,9 @@
 import { expect } from 'chai'
-import {
-    RabinVerifier,
-    RabinSig,
-    RabinPubKey,
-    RabinVerifierWOC,
-} from '../src/rabinSignature'
-import {
-    method,
-    assert,
-    SmartContract,
-    ByteString,
-    byteString2Int,
-} from 'scrypt-ts'
+import { RabinSig } from '../src/rabinSignature'
+import { ByteString, byteString2Int } from 'scrypt-ts'
 
 import { generatePrivKey, privKeyToPubKey, sign } from 'rabinsig'
-
-class RabinVerifierTest extends SmartContract {
-    @method()
-    public verifySig(
-        msg: ByteString,
-        sig: RabinSig,
-        pubKey: RabinPubKey,
-        res: boolean
-    ) {
-        assert(RabinVerifier.verifySig(msg, sig, pubKey) == res)
-    }
-
-    @method()
-    public verifySigWOC(
-        msg: ByteString,
-        sig: RabinSig,
-        pubKey: RabinPubKey,
-        res: boolean
-    ) {
-        assert(RabinVerifierWOC.verifySig(msg, sig, pubKey) == res)
-    }
-}
+import { RabinVerifierTest } from './contracts/rabinSignature'
 
 describe('Test Rabin Signature', () => {
     let rabinVerifierTest

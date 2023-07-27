@@ -1,35 +1,11 @@
 import { expect, use } from 'chai'
 import chaiAsPromised from 'chai-as-promised'
 use(chaiAsPromised)
-
-import {
-    assert,
-    bsv,
-    ByteString,
-    method,
-    PubKey,
-    SmartContract,
-    toByteString,
-    toHex,
-} from 'scrypt-ts'
-import { Point } from '../src/ec/misc'
-import { Schnorr } from '../src/schnorr'
+import { bsv, PubKey, toByteString, toHex } from 'scrypt-ts'
+import { SchnorrTest } from './contracts/schnorr'
 
 const G = bsv.crypto.Point.getG()
 const N = bsv.crypto.Point.getN()
-
-class SchnorrTest extends SmartContract {
-    @method()
-    public test(
-        sig: ByteString,
-        pubKey: PubKey,
-        msg: ByteString,
-        R: Point,
-        res: boolean
-    ) {
-        assert(Schnorr.verify(sig, pubKey, msg, R) == res)
-    }
-}
 
 describe('Heavy: Test  contract "Schnorr"', () => {
     const pk = bsv.PrivateKey.fromRandom('testnet')

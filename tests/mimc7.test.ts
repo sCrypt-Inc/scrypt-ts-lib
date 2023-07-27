@@ -1,14 +1,6 @@
 import { expect } from 'chai'
 import { buildMimc7 } from 'circomlibjs'
-import { Mimc7 } from '../src/hash/mimc7'
-import { method, assert, SmartContract } from 'scrypt-ts'
-
-class Mimc7Test extends SmartContract {
-    @method()
-    public unlock(x: bigint, k: bigint, h: bigint) {
-        assert(Mimc7.hash(x, k) === h)
-    }
-}
+import { Mimc7Test } from './contracts/mimc7'
 
 const getRandomInt = (min: number, max: number) =>
     BigInt(Math.floor(Math.random() * (max - min) + min + 1))
