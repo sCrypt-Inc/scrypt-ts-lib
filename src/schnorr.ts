@@ -1,5 +1,4 @@
 import {
-    assert,
     ByteString,
     byteString2Int,
     method,
@@ -8,7 +7,6 @@ import {
     sha256,
     SmartContractLib,
     toByteString,
-    Utils,
 } from 'scrypt-ts'
 import { Point } from './ec/misc'
 import { SECP256K1 } from './ec/secp256k1'
