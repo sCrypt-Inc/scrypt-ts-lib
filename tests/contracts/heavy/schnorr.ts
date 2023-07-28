@@ -1,7 +1,7 @@
 import { assert, ByteString, method, PubKey, SmartContract } from 'scrypt-ts'
 
-import { Point } from '../../src/ec/misc'
-import { Schnorr } from '../../src/schnorr'
+import { Point } from '../../../src/ec/misc'
+import { Schnorr } from '../../../src/schnorr'
 
 export class SchnorrTest extends SmartContract {
     @method()

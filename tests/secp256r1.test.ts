@@ -1,6 +1,6 @@
 import { expect } from 'chai'
 import { Point, Signature } from '../src/ec/misc'
-import { SECP256R1Test } from './contracts/secp256r1'
+import { SECP256R1Test } from './contracts/heavy/secp256r1'
 
 describe('Heavy: Test SECP256R1 curve', () => {
     let secp256k1test = undefined

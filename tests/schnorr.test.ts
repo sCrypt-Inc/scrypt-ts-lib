@@ -2,7 +2,7 @@ import { expect, use } from 'chai'
 import chaiAsPromised from 'chai-as-promised'
 use(chaiAsPromised)
 import { bsv, PubKey, toByteString, toHex } from 'scrypt-ts'
-import { SchnorrTest } from './contracts/schnorr'
+import { SchnorrTest } from './contracts/heavy/schnorr'
 
 const G = bsv.crypto.Point.getG()
 const N = bsv.crypto.Point.getN()

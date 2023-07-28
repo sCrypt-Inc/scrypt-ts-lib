@@ -7,7 +7,7 @@ import {
 } from 'scrypt-ts'
 
 import { Point, Signature } from '../src/ec/misc'
-import { SECP256K1Test } from './contracts/secp256k1'
+import { SECP256K1Test } from './contracts/heavy/secp256k1'
 
 describe('Heavy: Test SECP256K1 curve', () => {
     let secp256k1test = undefined

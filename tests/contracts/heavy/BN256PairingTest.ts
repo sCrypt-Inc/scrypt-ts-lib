@@ -6,7 +6,7 @@ import {
     CurvePoint,
     TwistPoint,
     LineFuncRes,
-} from '../../src/ec/bn256'
+} from '../../../src/ec/bn256'
 import { method, assert, SmartContract } from 'scrypt-ts'
 
 export class BN256PairingTest extends SmartContract {

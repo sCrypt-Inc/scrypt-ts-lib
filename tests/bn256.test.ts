@@ -1,5 +1,5 @@
 import { expect } from 'chai'
-import { BN256Test } from './contracts/BN256Test'
+import { BN256Test } from './contracts/heavy/BN256Test'
 import { FQ2, FQ6, FQ12, CurvePoint, TwistPoint } from '../src/ec/bn256'
 
 describe('Heavy: Test BN256 curve', () => {
