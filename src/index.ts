@@ -3,16 +3,18 @@ export { BN256, BN256Pairing } from './ec/bn256'
 export { G16BN256 } from './zk/g16bn256'
 export { SECP256K1 } from './ec/secp256k1'
 export { SECP256R1 } from './ec/secp256r1'
-export { Point, Signature } from './ec/misc'
-export {
-    RabinPubKey,
-    RabinSig,
-    RabinVerifier,
-    RabinVerifierWOC,
-} from './rabinSignature'
-export { Fraction, FRMath } from './fractionMath'
-export { BlockHeader, Blockchain } from './blockchain'
-export { MerklePath, MerkleProof, Node } from './merklePath'
+
+export type { BlockHeader } from './blockchain'
+export { Blockchain } from './blockchain'
+export type { Point, Signature } from './ec/misc'
+export type { RabinPubKey, RabinSig } from './rabinSignature'
+
+export { RabinVerifier, RabinVerifierWOC } from './rabinSignature'
+
+export type { Fraction } from './fractionMath'
+export { FRMath } from './fractionMath'
+export type { MerkleProof, Node } from './merklePath'
+export type { MerklePath } from './merklePath'
 export { Shift10 } from './shift10'
 export { ArrayUtils } from './arrayUtils'
 export { Schnorr } from './schnorr'

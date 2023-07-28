@@ -1,9 +1,5 @@
 import { expect } from 'chai'
-import { SECP256K1 } from '../src/ec/secp256k1'
 import {
-    method,
-    assert,
-    SmartContract,
     toByteString,
     hash256,
     byteString2Int,
@@ -11,38 +7,7 @@ import {
 } from 'scrypt-ts'
 
 import { Point, Signature } from '../src/ec/misc'
-
-class SECP256K1Test extends SmartContract {
-    @method()
-    public modReduce(x: bigint, m: bigint, res: bigint) {
-        assert(SECP256K1.modReduce(x, m) == res)
-    }
-
-    @method()
-    public addPoints(a: Point, b: Point, res: Point) {
-        assert(SECP256K1.comparePoints(SECP256K1.addPoints(a, b), res))
-    }
-
-    @method()
-    public doublePoint(a: Point, res: Point) {
-        assert(SECP256K1.comparePoints(SECP256K1.doublePoint(a), res))
-    }
-
-    @method()
-    public mulByScalar(a: Point, scalar: bigint, res: Point) {
-        assert(SECP256K1.comparePoints(SECP256K1.mulByScalar(a, scalar), res))
-    }
-
-    @method()
-    public verifySig(
-        hashInt: bigint,
-        sig: Signature,
-        pubKey: Point,
-        res: boolean
-    ) {
-        assert(SECP256K1.verifySig(hashInt, sig, pubKey) == res)
-    }
-}
+import { SECP256K1Test } from './contracts/heavy/secp256k1'
 
 describe('Heavy: Test SECP256K1 curve', () => {
     let secp256k1test = undefined
