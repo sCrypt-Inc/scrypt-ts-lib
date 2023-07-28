@@ -1,11 +1,9 @@
 .github
 .husky
 .vscode
-/optimizations
 /src
 /tests
 .gitignore
-/node_modules
 .eslintcache
 .eslintignore
 .eslintrc
@@ -13,9 +11,8 @@
 .prettierrc
 .travis.yml
 tsconfig.json
-/dist/tests
-/dist/src/**/*.js.map
 /artifacts/tests
 /artifacts/src/**/*.scrypt.map
 /artifacts/src/**/*.json
+.asm/
 
