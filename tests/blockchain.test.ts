@@ -1,85 +1,13 @@
 import { expect } from 'chai'
-import { BlockHeader, Blockchain } from '../src/blockchain'
+import { BlockchainTest } from './contracts/blockchainTest'
 import {
-    method,
-    assert,
-    SmartContract,
-    ByteString,
     Sha256,
     int2ByteString,
     toByteString,
     reverseByteString,
 } from 'scrypt-ts'
-import { MerklePath, MerkleProof } from '../src/merklePath'
-
-class BlockchainTest extends SmartContract {
-    @method()
-    public testTxInBlock(
-        txid: Sha256,
-        bh: BlockHeader,
-        merkleProof: MerkleProof,
-        res: boolean
-    ) {
-        assert(Blockchain.txInBlock(txid, bh, merkleProof) == res)
-    }
-
-    @method()
-    public testBlockHeaderHash(bh: BlockHeader, res: Sha256) {
-        assert(Blockchain.blockHeaderHash(bh) == res)
-    }
-
-    @method()
-    public testLastTxInBlock(
-        txid: Sha256,
-        bh: BlockHeader,
-        merkleProof: MerkleProof,
-        res: boolean
-    ) {
-        assert(Blockchain.lastTxInBlock(txid, bh, merkleProof) == res)
-    }
-
-    @method()
-    public testIsValidBlockHeader(
-        bh: BlockHeader,
-        target: bigint,
-        res: boolean
-    ) {
-        assert(Blockchain.isValidBlockHeader(bh, target) == res)
-    }
-
-    @method()
-    public testIsCoinbase(tx: ByteString, res: boolean) {
-        assert(Blockchain.isCoinbase(tx) == res)
-    }
-
-    @method()
-    public testBlockHeight(
-        bh: BlockHeader,
-        coinbaseTx: ByteString,
-        merkleProof: MerkleProof,
-        res: bigint
-    ) {
-        assert(Blockchain.blockHeight(bh, coinbaseTx, merkleProof) == res)
-    }
-
-    //@method()
-    //public testTxIndex(
-    //    merkleProof: MerkleProof,
-    //    res: bigint
-    //) {
-    //    assert(Blockchain.txIndex(merkleProof) == res)
-    //}
-
-    //@method()
-    //public testBlockTxCount(
-    //    bh: BlockHeader,
-    //    lastTxId: Sha256,
-    //    merkleProof: MerkleProof,
-    //    res: bigint
-    //) {
-    //    assert(Blockchain.blockTxCount(bh, lastTxId, merkleProof) == res)
-    //}
-}
+import { MerkleProof, MerklePath } from '../src/merklePath'
+import { BlockHeader } from '../src/blockchain'
 
 describe('Test Blockchain', () => {
     let blockchainTest: BlockchainTest
