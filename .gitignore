@@ -2,6 +2,5 @@ node_modules
 dist
 artifacts/
 scrypt.index.json
-tests/out
 **/scrypt.index.json
 .eslintcache
