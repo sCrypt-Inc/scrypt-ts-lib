@@ -8,11 +8,13 @@
     "prebuild": "npm run clean",
     "build": "tsc",
     "clean": "rimraf dist && rimraf artifacts",
-    "compile": "npx scrypt-cli@latest compile --asm -i=\"./src/**/*.ts\"",
-    "pretest": "npx scrypt-cli@latest compile -i=\"./tests/contracts/*.ts\"",
-    "test": "mocha -i -f 'Heavy'",
-    "pretest-all": "npx scrypt-cli@latest compile --asm -i=\"./tests/contracts/**/*.ts\"",
-    "test-all": "mocha",
+    "compile": "npx scrypt-cli@latest compile --asm",
+    "compileTest": "cd tests && npx scrypt-cli@latest compile",
+    "compileAllTest": "cd tests && npx scrypt-cli@latest compile -e=\"1\"",
+    "pretest": "npm run build && npm run compile && npm run compileTest",
+    "test": "cd tests && mocha -i -f 'Heavy'",
+    "pretest-all": "npm run build && npm run compile && npm run compileAllTest",
+    "test-all": "cd tests && mocha",
     "lint": "eslint . --ext .js,.ts --fix && prettier --write --ignore-unknown \"**/*\"",
     "lint-check": "eslint . --ext .js,.ts && prettier --check --ignore-unknown \"**/*\"",
     "prepare": "husky install",
@@ -40,7 +42,7 @@
   },
   "homepage": "https://github.com/sCrypt-Inc/scrypt-ts-lib#readme",
   "dependencies": {
-    "scrypt-ts": "^1.2.0"
+    "scrypt-ts": "^1.3.2"
   },
   "devDependencies": {
     "@types/chai": "^4.3.4",

@@ -1,6 +1,5 @@
-import { BlockHeader, Blockchain } from '../../src/blockchain'
 import { method, assert, SmartContract, ByteString, Sha256 } from 'scrypt-ts'
-import { MerkleProof } from '../../src/merklePath'
+import { MerkleProof, BlockHeader, Blockchain } from '../scrypt-ts-lib'
 
 export class BlockchainTest extends SmartContract {
     @method()

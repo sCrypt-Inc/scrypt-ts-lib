@@ -1,6 +1,12 @@
 import { expect } from 'chai'
-import { BN256PairingTest } from './contracts/heavy/BN256PairingTest'
-import { FQ2, FQ12, CurvePoint, TwistPoint, LineFuncRes } from '../src/ec/bn256'
+import { BN256PairingTest } from '../contracts/heavy/BN256PairingTest'
+import {
+    FQ2,
+    FQ12,
+    CurvePoint,
+    TwistPoint,
+    LineFuncRes,
+} from '../scrypt-ts-lib'
 
 describe('Heavy: Test BN256 pairing', () => {
     let bn256pairingTest = undefined

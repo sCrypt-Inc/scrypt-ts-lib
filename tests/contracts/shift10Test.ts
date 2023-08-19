@@ -1,4 +1,4 @@
-import { Shift10 } from '../../src/shift10'
+import { Shift10 } from '../scrypt-ts-lib'
 import { method, assert, SmartContract } from 'scrypt-ts'
 
 export class Shift10Test extends SmartContract {

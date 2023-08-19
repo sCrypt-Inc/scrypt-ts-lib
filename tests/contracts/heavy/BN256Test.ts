@@ -5,7 +5,7 @@ import {
     FQ12,
     CurvePoint,
     TwistPoint,
-} from '../../../src/ec/bn256'
+} from '../../scrypt-ts-lib'
 import { method, assert, SmartContract } from 'scrypt-ts'
 
 export class BN256Test extends SmartContract {

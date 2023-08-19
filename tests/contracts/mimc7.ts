@@ -1,4 +1,4 @@
-import { Mimc7 } from '../../src/hash/mimc7'
+import { Mimc7 } from '../scrypt-ts-lib'
 import { method, assert, SmartContract } from 'scrypt-ts'
 
 export class Mimc7Test extends SmartContract {

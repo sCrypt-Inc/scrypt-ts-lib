@@ -1,4 +1,4 @@
-import { MerklePath, MerkleProof } from '../../src/merklePath'
+import { MerklePath, MerkleProof } from '../scrypt-ts-lib'
 import { method, assert, SmartContract, Sha256 } from 'scrypt-ts'
 
 export class MerklePathTest extends SmartContract {

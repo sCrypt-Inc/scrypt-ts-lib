@@ -1,7 +1,7 @@
 import { expect } from 'chai'
 import bigintRnd from 'bigint-rnd'
 
-import { Shift10Test } from './contracts/shift10Test'
+import { Shift10Test } from '../contracts/shift10Test'
 const OPS = {
     pow: 0n,
     left: 1n,

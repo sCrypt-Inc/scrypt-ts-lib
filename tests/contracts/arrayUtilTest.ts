@@ -1,5 +1,5 @@
 import { method, assert, SmartContract, ByteString } from 'scrypt-ts'
-import { ArrayUtils } from '../../src/arrayUtils'
+import { ArrayUtils } from '../scrypt-ts-lib'
 
 export class ArrayUtilTest extends SmartContract {
     @method()

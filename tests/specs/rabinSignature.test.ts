@@ -1,9 +1,9 @@
 import { expect } from 'chai'
-import { RabinSig } from '../src/rabinSignature'
+import { RabinSig } from '../scrypt-ts-lib'
 import { ByteString, byteString2Int } from 'scrypt-ts'
 
 import { generatePrivKey, privKeyToPubKey, sign } from 'rabinsig'
-import { RabinVerifierTest } from './contracts/rabinSignature'
+import { RabinVerifierTest } from '../contracts/rabinSignature'
 
 describe('Test Rabin Signature', () => {
     let rabinVerifierTest

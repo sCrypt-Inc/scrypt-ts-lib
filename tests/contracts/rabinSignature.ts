@@ -3,7 +3,7 @@ import {
     RabinSig,
     RabinPubKey,
     RabinVerifierWOC,
-} from '../../src/rabinSignature'
+} from '../scrypt-ts-lib'
 
 import { method, assert, SmartContract, ByteString } from 'scrypt-ts'
 

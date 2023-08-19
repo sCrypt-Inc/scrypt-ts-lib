@@ -1,6 +1,6 @@
 import { expect } from 'chai'
-import { Fraction } from '../src/fractionMath'
-import { FRMathTest } from './contracts/fractionMath'
+import { Fraction } from '../scrypt-ts-lib'
+import { FRMathTest } from '../contracts/fractionMath'
 
 const [ADD, SUB, MUL, DIV, ABS] = [0, 1, 2, 3, 4]
 

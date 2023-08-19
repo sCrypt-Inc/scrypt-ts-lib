@@ -1,5 +1,5 @@
 import { expect } from 'chai'
-import { ArrayUtilTest } from './contracts/arrayUtilTest'
+import { ArrayUtilTest } from '../contracts/arrayUtilTest'
 import { ByteString } from 'scrypt-ts'
 
 describe('Test ArrayUtils', () => {
