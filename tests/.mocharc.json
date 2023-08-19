@@ -7,6 +7,6 @@
   "slow": "75",
   "timeout": "1200000",
   "ui": "bdd",
-  "spec": ["./tests/**/*.test.ts"],
-  "watch-files": ["./tests/**/*.test.ts"]
+  "spec": ["./specs/**/*.test.ts"],
+  "watch-files": ["./specs/**/*.test.ts"]
 }

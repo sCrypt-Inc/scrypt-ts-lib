@@ -12,7 +12,7 @@
 .travis.yml
 tsconfig.json
 /artifacts/tests
-/artifacts/src/**/*.scrypt.map
-/artifacts/src/**/*.json
+/artifacts/**/*.scrypt.map
+/artifacts/**/*.json
 .asm/
 

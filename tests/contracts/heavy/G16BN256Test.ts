@@ -1,4 +1,4 @@
-import { G16BN256, Proof, VerifyingKey } from '../../../src/zk/g16bn256'
+import { G16BN256, Proof, VerifyingKey } from '../../scrypt-ts-lib'
 
 import { method, assert, SmartContract, FixedArray } from 'scrypt-ts'
 

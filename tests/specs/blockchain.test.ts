@@ -1,13 +1,12 @@
 import { expect } from 'chai'
-import { BlockchainTest } from './contracts/blockchainTest'
+import { BlockchainTest } from '../contracts/blockchainTest'
 import {
     Sha256,
     int2ByteString,
     toByteString,
     reverseByteString,
 } from 'scrypt-ts'
-import { MerkleProof, MerklePath } from '../src/merklePath'
-import { BlockHeader } from '../src/blockchain'
+import { MerkleProof, MerklePath, BlockHeader } from '../scrypt-ts-lib'
 
 describe('Test Blockchain', () => {
     let blockchainTest: BlockchainTest

@@ -1,7 +1,6 @@
 import { expect } from 'chai'
-import { FQ12 } from '../src/ec/bn256'
-import { G16BN256Test } from './contracts/heavy/G16BN256Test'
-import { Proof, VerifyingKey } from '../src/zk/g16bn256'
+import { FQ12, Proof, VerifyingKey } from '../scrypt-ts-lib'
+import { G16BN256Test } from '../contracts/heavy/G16BN256Test'
 import { FixedArray } from 'scrypt-ts'
 
 describe('Heavy: Test G16 on BN256', () => {

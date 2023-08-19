@@ -1,5 +1,4 @@
-import { SECP256R1 } from '../../../src/ec/secp256r1'
-import { Point, Signature } from '../../../src/ec/misc'
+import { Point, Signature, SECP256R1 } from '../../scrypt-ts-lib'
 import { method, assert, SmartContract } from 'scrypt-ts'
 
 export class SECP256R1Test extends SmartContract {

@@ -1,5 +1,5 @@
 import { method, assert, SmartContract } from 'scrypt-ts'
-import { Fraction, FRMath } from '../../src/fractionMath'
+import { Fraction, FRMath } from '../scrypt-ts-lib'
 
 export class FRMathTest extends SmartContract {
     @method()

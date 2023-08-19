@@ -1,6 +1,6 @@
 import { expect } from 'chai'
 import { buildMimc7 } from 'circomlibjs'
-import { Mimc7Test } from './contracts/mimc7'
+import { Mimc7Test } from '../contracts/mimc7'
 
 const getRandomInt = (min: number, max: number) =>
     BigInt(Math.floor(Math.random() * (max - min) + min + 1))
