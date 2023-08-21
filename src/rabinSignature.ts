@@ -1,4 +1,13 @@
-import { ByteString, method, sha256, SmartContractLib, Utils } from 'scrypt-ts'
+import {
+    ByteString,
+    method,
+    sha256,
+    SmartContractLib,
+    Utils,
+    slice,
+    toByteString,
+    byteString2Int,
+} from 'scrypt-ts'
 
 export type RabinPubKey = bigint
 
@@ -11,11 +20,26 @@ export type RabinSig = {
 }
 
 export class RabinVerifier extends SmartContractLib {
+    static readonly SECURITY_LEVEL = 6
+
     @method()
-    static hash(x: ByteString): ByteString {
+    static expandHash(x: ByteString): ByteString {
         // expand into 512 bit hash
         const hx = sha256(x)
-        return sha256(hx.slice(0, 32)) + sha256(hx.slice(32, 64))
+        return sha256(slice(hx, 0n, 16n)) + sha256(slice(hx, 16n))
+    }
+
+    @method()
+    static hash(x: ByteString): ByteString {
+        let result = toByteString('')
+        for (let i = 0; i < RabinVerifier.SECURITY_LEVEL; i++) {
+            if (i == 0) {
+                result = RabinVerifier.expandHash(x)
+            } else {
+                result += RabinVerifier.expandHash(result)
+            }
+        }
+        return result
     }
 
     @method()
@@ -51,5 +75,20 @@ export class RabinVerifierWOC extends SmartContractLib {
     ): boolean {
         const h = Utils.fromLEUnsigned(RabinVerifierWOC.hash(msg + sig.padding))
         return (sig.s * sig.s) % pubKey == h % pubKey
+    }
+
+    static parsePubKey(response: {
+        signatures: { rabin: { public_key: string } }
+    }): RabinPubKey {
+        return byteString2Int(response.signatures.rabin.public_key + '00')
+    }
+
+    static parseSig(response: {
+        signatures: { rabin: { signature: string; padding: string } }
+    }): RabinSig {
+        return {
+            s: byteString2Int(response.signatures.rabin.signature + '00'),
+            padding: response.signatures.rabin.padding,
+        }
     }
 }

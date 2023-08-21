@@ -1,14 +1,19 @@
 import { expect } from 'chai'
-import { RabinSig } from '../scrypt-ts-lib'
-import { ByteString, byteString2Int } from 'scrypt-ts'
+import { RabinVerifierWOC } from '../scrypt-ts-lib'
+import { ByteString } from 'scrypt-ts'
 
-import { generatePrivKey, privKeyToPubKey, sign } from 'rabinsig'
+import { Rabin, toRabinSig } from 'rabinsig'
 import { RabinVerifierTest } from '../contracts/rabinSignature'
 
 describe('Test Rabin Signature', () => {
-    let rabinVerifierTest
-
     const msg: ByteString = '00112233445566778899aabbccddeeff'
+
+    const rabin = new Rabin()
+    const privateKey = rabin.generatePrivKey()
+    const publicKey = rabin.privKeyToPubKey(privateKey)
+    const signature = rabin.sign(msg, privateKey)
+
+    let rabinVerifierTest
 
     before(async () => {
         await RabinVerifierTest.compile()
@@ -16,69 +21,30 @@ describe('Test Rabin Signature', () => {
     })
 
     it('should pass w correct signature', () => {
-        const key = generatePrivKey()
-        const nRabin = privKeyToPubKey(key.p, key.q)
-        const signRes = sign(msg, key.p, key.q, nRabin)
-
-        let paddingBytes: ByteString = ''
-
-        for (let i = 0; i < signRes.paddingByteCount; i++) {
-            paddingBytes += '00'
-        }
-
-        const sig: RabinSig = {
-            s: signRes.signature,
-            padding: paddingBytes,
-        }
-
         const result = rabinVerifierTest.verify((self) => {
-            self.verifySig(msg, sig, nRabin, true)
+            self.verifySig(msg, toRabinSig(signature), publicKey, true)
         })
         expect(result.success, result.error).to.be.true
     })
 
     it('should fail w wrong padding', () => {
-        const key = generatePrivKey()
-        const nRabin = privKeyToPubKey(key.p, key.q)
-        const signRes = sign(msg, key.p, key.q, nRabin)
-
-        let paddingBytes: ByteString = ''
-
-        for (let i = 0; i < signRes.paddingByteCount + 1; i++) {
-            paddingBytes += '00'
-        }
-
-        const sig: RabinSig = {
-            s: signRes.signature,
-            padding: paddingBytes,
-        }
-
+        const wrongSignature = Object.assign({}, signature, {
+            paddingByteCount: signature.paddingByteCount + 1,
+        })
         expect(() => {
             rabinVerifierTest.verify((self) => {
-                self.verifySig(msg, sig, nRabin, true)
+                self.verifySig(msg, toRabinSig(wrongSignature), publicKey, true)
             })
         }).to.throw(/Execution failed/)
     })
 
     it('should fail w wrong signature', () => {
-        const key = generatePrivKey()
-        const nRabin = privKeyToPubKey(key.p, key.q)
-        const signRes = sign(msg, key.p, key.q, nRabin)
-
-        let paddingBytes: ByteString = ''
-
-        for (let i = 0; i < signRes.paddingByteCount; i++) {
-            paddingBytes += '00'
-        }
-
-        const sig: RabinSig = {
-            s: signRes.signature - 1n,
-            padding: paddingBytes,
-        }
-
+        const wrongSignature = Object.assign({}, signature, {
+            signature: signature.signature + 1n,
+        })
         expect(() => {
             rabinVerifierTest.verify((self) => {
-                self.verifySig(msg, sig, nRabin, true)
+                self.verifySig(msg, toRabinSig(wrongSignature), publicKey, true)
             })
         }).to.throw(/Execution failed/)
     })
@@ -100,19 +66,11 @@ describe('Test Rabin Signature', () => {
             timestamp: 1680856049,
         }
 
-        const nRabin = byteString2Int(
-            WOC_DATA.signatures.rabin.public_key + '00'
-        )
-
-        const s = byteString2Int(WOC_DATA.signatures.rabin.signature + '00')
-
-        const sig: RabinSig = {
-            s: s,
-            padding: WOC_DATA.signatures.rabin.padding,
-        }
+        const pubKey = RabinVerifierWOC.parsePubKey(WOC_DATA)
+        const sig = RabinVerifierWOC.parseSig(WOC_DATA)
 
         const result = rabinVerifierTest.verify((self) => {
-            self.verifySigWOC(WOC_DATA.digest, sig, nRabin, true)
+            self.verifySigWOC(WOC_DATA.digest, sig, pubKey, true)
         })
         expect(result.success, result.error).to.be.true
     })
