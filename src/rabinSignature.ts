@@ -6,7 +6,6 @@ import {
     Utils,
     slice,
     toByteString,
-    byteString2Int,
 } from 'scrypt-ts'
 
 export type RabinPubKey = bigint
@@ -80,14 +79,14 @@ export class RabinVerifierWOC extends SmartContractLib {
     static parsePubKey(response: {
         signatures: { rabin: { public_key: string } }
     }): RabinPubKey {
-        return byteString2Int(response.signatures.rabin.public_key + '00')
+        return Utils.fromLEUnsigned(response.signatures.rabin.public_key)
     }
 
     static parseSig(response: {
         signatures: { rabin: { signature: string; padding: string } }
     }): RabinSig {
         return {
-            s: byteString2Int(response.signatures.rabin.signature + '00'),
+            s: Utils.fromLEUnsigned(response.signatures.rabin.signature),
             padding: response.signatures.rabin.padding,
         }
     }
