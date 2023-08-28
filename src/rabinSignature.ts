@@ -77,17 +77,17 @@ export class RabinVerifierWOC extends SmartContractLib {
     }
 
     static parsePubKey(response: {
-        signatures: { rabin: { public_key: string } }
+        rabin: { public_key: string }
     }): RabinPubKey {
-        return Utils.fromLEUnsigned(response.signatures.rabin.public_key)
+        return Utils.fromLEUnsigned(response.rabin.public_key)
     }
 
     static parseSig(response: {
-        signatures: { rabin: { signature: string; padding: string } }
+        rabin: { signature: { s: string; padding: string } }
     }): RabinSig {
         return {
-            s: Utils.fromLEUnsigned(response.signatures.rabin.signature),
-            padding: response.signatures.rabin.padding,
+            s: Utils.fromLEUnsigned(response.rabin.signature.s),
+            padding: response.rabin.signature.padding,
         }
     }
 }
