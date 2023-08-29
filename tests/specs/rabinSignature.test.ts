@@ -65,11 +65,12 @@ describe('Test Rabin Signature', () => {
             timestamp: 1680856049,
         }
 
+        const msg = RabinVerifierWOC.parseMsg(WOC_DATA)
         const pubKey = RabinVerifierWOC.parsePubKey(WOC_DATA)
         const sig = RabinVerifierWOC.parseSig(WOC_DATA)
 
         const result = rabinVerifierTest.verify((self) => {
-            self.verifySigWOC(WOC_DATA.digest, sig, pubKey, true)
+            self.verifySigWOC(msg, sig, pubKey, true)
         })
         expect(result.success, result.error).to.be.true
     })

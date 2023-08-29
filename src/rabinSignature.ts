@@ -30,13 +30,9 @@ export class RabinVerifier extends SmartContractLib {
 
     @method()
     static hash(x: ByteString): ByteString {
-        let result = toByteString('')
-        for (let i = 0; i < RabinVerifier.SECURITY_LEVEL; i++) {
-            if (i == 0) {
-                result = RabinVerifier.expandHash(x)
-            } else {
-                result += RabinVerifier.expandHash(result)
-            }
+        let result = RabinVerifier.expandHash(x)
+        for (let i = 0; i < RabinVerifier.SECURITY_LEVEL - 1; i++) {
+            result += RabinVerifier.expandHash(result)
         }
         return result
     }
@@ -74,6 +70,10 @@ export class RabinVerifierWOC extends SmartContractLib {
     ): boolean {
         const h = Utils.fromLEUnsigned(RabinVerifierWOC.hash(msg + sig.padding))
         return (sig.s * sig.s) % pubKey == h % pubKey
+    }
+
+    static parseMsg(response: { digest: string }): ByteString {
+        return toByteString(response.digest)
     }
 
     static parsePubKey(response: {
