@@ -4,3 +4,4 @@ artifacts/
 scrypt.index.json
 **/scrypt.index.json
 .eslintcache
+**/tsconfig-scryptTS.json

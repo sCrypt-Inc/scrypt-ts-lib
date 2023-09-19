@@ -1,5 +1,4 @@
-import { assert } from 'console'
-import { prop, method, SmartContractLib, FixedArray } from 'scrypt-ts'
+import { prop, method, SmartContractLib, FixedArray, assert } from 'scrypt-ts'
 
 /*
 NOTICES:
