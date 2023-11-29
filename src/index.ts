@@ -18,7 +18,7 @@ export { Blockchain } from './blockchain'
 export type { Point, Signature } from './ec/misc'
 export type { RabinPubKey, RabinSig } from './rabinSignature'
 
-export { RabinVerifier, RabinVerifierWOC } from './rabinSignature'
+export { RabinVerifier, WitnessOnChainVerifier } from './rabinSignature'
 
 export type { Fraction } from './fractionMath'
 export { FRMath } from './fractionMath'

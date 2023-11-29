@@ -2,7 +2,7 @@ import {
     RabinVerifier,
     RabinSig,
     RabinPubKey,
-    RabinVerifierWOC,
+    WitnessOnChainVerifier,
 } from '../scrypt-ts-lib'
 
 import { method, assert, SmartContract, ByteString } from 'scrypt-ts'
@@ -19,12 +19,12 @@ export class RabinVerifierTest extends SmartContract {
     }
 
     @method()
-    public verifySigWOC(
+    public verifySigWitnessOnChain(
         msg: ByteString,
         sig: RabinSig,
         pubKey: RabinPubKey,
         res: boolean
     ) {
-        assert(RabinVerifierWOC.verifySig(msg, sig, pubKey) == res)
+        assert(WitnessOnChainVerifier.verifySig(msg, sig, pubKey) == res)
     }
 }

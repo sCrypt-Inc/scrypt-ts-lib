@@ -7,6 +7,7 @@ import {
     slice,
     toByteString,
 } from 'scrypt-ts'
+import { toRabinSig, deserialize } from 'rabinsig'
 
 export type RabinPubKey = bigint
 
@@ -48,46 +49,31 @@ export class RabinVerifier extends SmartContractLib {
     }
 }
 
-export class RabinVerifierWOC extends SmartContractLib {
-    // Rabin signature verifier for WitnessOnChain.
-    // https://witnessonchain.com
-
-    @method()
-    static hash(x: ByteString): ByteString {
-        // expand into 3072 bit hash
-        let hx: ByteString = sha256(x)
-        for (let i = 0; i < 11; i++) {
-            hx += sha256(hx)
-        }
-        return hx
-    }
-
+/**
+ * Rabin signature verifier for WitnessOnChain.
+ * @see {@link https://api.witnessonchain.com }
+ */
+export class WitnessOnChainVerifier extends SmartContractLib {
     @method()
     static verifySig(
         msg: ByteString,
         sig: RabinSig,
         pubKey: RabinPubKey
     ): boolean {
-        const h = Utils.fromLEUnsigned(RabinVerifierWOC.hash(msg + sig.padding))
-        return (sig.s * sig.s) % pubKey == h % pubKey
+        return RabinVerifier.verifySig(msg, sig, pubKey)
     }
 
-    static parseMsg(response: { digest: string }): ByteString {
-        return toByteString(response.digest)
+    static parseMsg(response: { data: string }): ByteString {
+        return toByteString(response.data)
     }
 
-    static parsePubKey(response: {
-        rabin: { public_key: string }
-    }): RabinPubKey {
-        return Utils.fromLEUnsigned(response.rabin.public_key)
+    static parsePubKey(response: { publicKey: string }): RabinPubKey {
+        return Utils.fromLEUnsigned(response.publicKey + '00')
     }
 
     static parseSig(response: {
-        rabin: { signature: { s: string; padding: string } }
+        signature: { s: string; padding: string }
     }): RabinSig {
-        return {
-            s: Utils.fromLEUnsigned(response.rabin.signature.s),
-            padding: response.rabin.signature.padding,
-        }
+        return toRabinSig(deserialize(response.signature))
     }
 }
