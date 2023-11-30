@@ -68,7 +68,7 @@ export class WitnessOnChainVerifier extends SmartContractLib {
     }
 
     static parsePubKey(response: { publicKey: string }): RabinPubKey {
-        return Utils.fromLEUnsigned(response.publicKey + '00')
+        return Utils.fromLEUnsigned(response.publicKey)
     }
 
     static parseSig(response: {
