@@ -7,6 +7,7 @@ import {
     sha256,
     SmartContractLib,
     toByteString,
+    slice,
 } from 'scrypt-ts'
 import { Point } from './ec/misc'
 import { SECP256K1 } from './ec/secp256k1'
@@ -21,9 +22,9 @@ export class Schnorr extends SmartContractLib {
         msg: ByteString,
         R: Point
     ): boolean {
-        const r: ByteString = sig.slice(0, 64) // First 32 bytes
+        const r: ByteString = slice(sig, 0n, 64n) // First 32 bytes
         const s = byteString2Int(
-            reverseByteString(sig.slice(64, 128), 32n) + toByteString('00')
+            reverseByteString(slice(sig, 32n, 64n), 32n) + toByteString('00')
         )
 
         // e = Hash(r || P || msg)

@@ -11,6 +11,7 @@ import {
     Utils,
     reverseByteString,
     ByteString,
+    slice,
 } from 'scrypt-ts'
 
 import { Point, Signature } from './misc'
@@ -1244,15 +1245,15 @@ export class SECP256K1 extends SmartContractLib {
     @method()
     static pubKey2Point(pubKey: PubKey): Point {
         assert(
-            pubKey.slice(0, 2) == toByteString('04'),
+            slice(pubKey, 0n, 1n) == toByteString('04'),
             'Pub key isn\'t prefixed with "04". This likely means, that it\'s not in compressed form.'
         )
         // Convert signed little endian to unsigned big endian.
         const x = Utils.fromLEUnsigned(
-            reverseByteString(pubKey.slice(2, 66), 32n)
+            reverseByteString(slice(pubKey, 1n, 33n), 32n)
         )
         const y = Utils.fromLEUnsigned(
-            reverseByteString(pubKey.slice(66, 130), 32n)
+            reverseByteString(slice(pubKey, 33n, 65n), 32n)
         )
         return {
             x: x,
