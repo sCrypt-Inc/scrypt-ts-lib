@@ -22,7 +22,7 @@ export class Schnorr extends SmartContractLib {
         msg: ByteString,
         R: Point
     ): boolean {
-        const r: ByteString = slice(sig, 0n, 64n) // First 32 bytes
+        const r: ByteString = slice(sig, 0n, 32n) // First 32 bytes
         const s = byteString2Int(
             reverseByteString(slice(sig, 32n, 64n), 32n) + toByteString('00')
         )
