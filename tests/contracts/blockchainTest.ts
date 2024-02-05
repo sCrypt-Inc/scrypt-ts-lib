@@ -9,7 +9,7 @@ export class BlockchainTest extends SmartContract {
         merkleProof: MerkleProof,
         res: boolean
     ) {
-        assert(Blockchain.txInBlock(txid, bh, merkleProof) == res)
+        assert(Blockchain.txInBlock(txid, bh, merkleProof, 32) == res)
     }
 
     @method()
@@ -24,7 +24,7 @@ export class BlockchainTest extends SmartContract {
         merkleProof: MerkleProof,
         res: boolean
     ) {
-        assert(Blockchain.lastTxInBlock(txid, bh, merkleProof) == res)
+        assert(Blockchain.lastTxInBlock(txid, bh, merkleProof, 32) == res)
     }
 
     @method()
@@ -48,7 +48,7 @@ export class BlockchainTest extends SmartContract {
         merkleProof: MerkleProof,
         res: bigint
     ) {
-        assert(Blockchain.blockHeight(bh, coinbaseTx, merkleProof) == res)
+        assert(Blockchain.blockHeight(bh, coinbaseTx, merkleProof, 32) == res)
     }
 
     //@method()

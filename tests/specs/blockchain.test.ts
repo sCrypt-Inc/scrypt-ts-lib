@@ -1281,10 +1281,7 @@ function prepProofFromWoc(proof: any): MerkleProof {
         ),
         pos: MerklePath.INVALID_NODE,
     }
-    return [
-        ...res,
-        ...Array(Number(MerklePath.DEPTH) - res.length).fill(invalidNode),
-    ] as MerkleProof
+    return [...res, ...Array(32 - res.length).fill(invalidNode)] as MerkleProof
 }
 
 /**

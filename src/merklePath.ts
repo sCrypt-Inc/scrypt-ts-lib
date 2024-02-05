@@ -21,10 +21,6 @@ export type Node = {
 export type MerkleProof = FixedArray<Node, 32> // If shorter than 32, pad with invalid nodes.
 
 export class MerklePath extends SmartContractLib {
-    // Maximal depth of a Merkle tree/path, which can support a block with 2^32 transactions.
-    @prop()
-    static readonly DEPTH: bigint = 32n // TODO: Make configurable by lib user.
-
     @prop()
     static readonly INVALID_NODE: bigint = 0n
 
@@ -36,10 +32,14 @@ export class MerklePath extends SmartContractLib {
 
     // According to the given leaf node and merkle path, calculate the hash of the root node of the merkle tree.
     @method()
-    static calcMerkleRoot(leaf: Sha256, merkleProof: MerkleProof): Sha256 {
+    static calcMerkleRoot(
+        leaf: Sha256,
+        merkleProof: MerkleProof,
+        depth: number
+    ): Sha256 {
         let root = leaf
 
-        for (let i = 0; i < MerklePath.DEPTH; i++) {
+        for (let i = 0; i < depth; i++) {
             const node = merkleProof[i]
             if (node.pos != MerklePath.INVALID_NODE) {
                 // s is valid
@@ -55,9 +55,9 @@ export class MerklePath extends SmartContractLib {
 
     // A tx is the blocks coinbase if all nodes on its Merkle path are on the right branch.
     @method()
-    static isCoinbase(merkleproof: MerkleProof): boolean {
+    static isCoinbase(merkleproof: MerkleProof, depth: number): boolean {
         let res = true
-        for (let i = 0; i < MerklePath.DEPTH; i++) {
+        for (let i = 0; i < depth; i++) {
             const node = merkleproof[i]
             if (node.pos != MerklePath.INVALID_NODE) {
                 // node on the right
