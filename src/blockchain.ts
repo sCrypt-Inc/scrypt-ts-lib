@@ -33,9 +33,12 @@ export class Blockchain extends SmartContractLib {
     static txInBlock(
         txid: Sha256,
         bh: BlockHeader,
-        merkleProof: MerkleProof
+        merkleProof: MerkleProof,
+        depth: number
     ): boolean {
-        return MerklePath.calcMerkleRoot(txid, merkleProof) == bh.merkleRoot
+        return (
+            MerklePath.calcMerkleRoot(txid, merkleProof, depth) == bh.merkleRoot
+        )
     }
 
     // Is txid the last transaction in a block
@@ -43,12 +46,13 @@ export class Blockchain extends SmartContractLib {
     static lastTxInBlock(
         txid: Sha256,
         bh: BlockHeader,
-        merkleProof: MerkleProof
+        merkleProof: MerkleProof,
+        depth: number
     ): boolean {
         let last = true
         let root = txid
 
-        for (let i = 0; i < MerklePath.DEPTH; i++) {
+        for (let i = 0; i < depth; i++) {
             const node = merkleProof[i]
 
             if (node.pos != MerklePath.INVALID_NODE) {
@@ -139,15 +143,21 @@ export class Blockchain extends SmartContractLib {
     static blockHeight(
         bh: BlockHeader,
         coinbaseTx: ByteString,
-        merkleProof: MerkleProof
+        merkleProof: MerkleProof,
+        depth: number
     ): bigint {
         // Ensure coinbase it's in the block.
         assert(
-            Blockchain.txInBlock(Sha256(hash256(coinbaseTx)), bh, merkleProof)
+            Blockchain.txInBlock(
+                Sha256(hash256(coinbaseTx)),
+                bh,
+                merkleProof,
+                depth
+            )
         )
 
         // Ensure it's the coinbase.
-        assert(MerklePath.isCoinbase(merkleProof))
+        assert(MerklePath.isCoinbase(merkleProof, depth))
 
         return Blockchain.readBlockHeight(coinbaseTx)
     }
