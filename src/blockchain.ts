@@ -193,6 +193,18 @@ export class Blockchain extends SmartContractLib {
         )
     }
 
+    @method()
+    static deserialize(bh: ByteString): BlockHeader {
+        return {
+            version: slice(bh, 0n, 4n),
+            prevBlockHash: Sha256(slice(bh, 4n, 36n)),
+            merkleRoot: Sha256(slice(bh, 36n, 68n)),
+            time: Utils.fromLEUnsigned(slice(bh, 68n, 72n)),
+            bits: slice(bh, 72n, 76n),
+            nonce: Utils.fromLEUnsigned(slice(bh, 76n, 80n)),
+        }
+    }
+
     // Block header hash.
     @method()
     static blockHeaderHash(bh: BlockHeader): Sha256 {
