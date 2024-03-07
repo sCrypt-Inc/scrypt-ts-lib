@@ -122,6 +122,14 @@ export class Blockchain extends SmartContractLib {
         return bhHash <= target && target <= blockchainTarget
     }
 
+    @method()
+    static verifyBlockHeader(bh: BlockHeader): boolean {
+        const bhHash = Blockchain.blockHeaderHashAsInt(bh)
+        const target = Blockchain.bits2Target(bh.bits)
+        // Block hash below target
+        return bhHash <= target
+    }
+
     // Is a chain of block headers valid.
     // TODO
 
