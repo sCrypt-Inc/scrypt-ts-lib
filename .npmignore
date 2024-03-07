@@ -15,4 +15,5 @@ tsconfig.json
 /artifacts/**/*.scrypt.map
 /artifacts/**/*.json
 .asm/
+tsconfig-scryptTS.json
 
