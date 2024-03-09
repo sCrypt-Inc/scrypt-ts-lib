@@ -27,3 +27,16 @@ export { MerklePath } from './merklePath'
 export { Shift10 } from './shift10'
 export { ArrayUtils } from './arrayUtils'
 export { Schnorr } from './schnorr'
+export {
+    TxParser,
+    Output,
+    Input,
+    MAX_TX_INPUT_COUNT,
+    MAX_TX_OUTPUT_COUNT,
+} from './txParser'
+export {
+    TxParserBTC,
+    MAX_BTC_TX_INPUT_COUNT,
+    MAX_BTC_TX_OUTPUT_COUNT,
+    MAX_WITNESS_ITEM_COUNT,
+} from './txParserBTC'
