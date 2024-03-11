@@ -19,11 +19,3 @@ export class TestFixMath extends SmartContract{
     assert(exptest1 / TestFixMath.scale == 22026n);
   }
 }
-
-(async ()=>{
-    await TestFixMath.loadArtifact()
-    let instance = new TestFixMath()
-
-    const deployTx = await instance.deploy(1)
-    console.log('deployTx :',  deployTx.id)
-})()
