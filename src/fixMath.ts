@@ -1,4 +1,4 @@
-import { SmartContractLib, assert, lshift, method, rshift } from "scrypt-ts";
+import { SmartContractLib, and, assert, lshift, method, prop, rshift } from "scrypt-ts";
 
 export class FixMath extends SmartContractLib{
     /**
@@ -8,7 +8,8 @@ export class FixMath extends SmartContractLib{
     * Adapted from https://github.com/PetteriAimonen/libfixmath
     */
   
-    static  precision : bigint = 64n;
+    @prop()
+    static readonly  precision : bigint = 64n;
     static scale : bigint = 18446744073709551616n; // 2 ^ precision
   
     static ln2 : bigint = 12786308645202657280n; // log(x) * scale / log2(x)
@@ -34,196 +35,196 @@ export class FixMath extends SmartContractLib{
   
       // Multiply the result by root(2, 2^-i) when the bit at position i is 1. None of the intermediary results overflows
       // because the initial result is 2^191 and all magic factors are less than 2^65.
-      if ((x & 0x8000000000000000n) > 0n) {
+      if (and(x, 0x8000000000000000n) > 0n) {
         result = rshift(result * 0x16a09e667f3bcc909n, FixMath.precision);
       }
-      if ((x & 0x4000000000000000n) > 0n) {
+      if (and(x, 0x4000000000000000n) > 0n) {
         result = rshift(result * 0x1306fe0a31b7152dfn, FixMath.precision);
       }
-      if ((x & 0x2000000000000000n) > 0n) {
+      if (and(x, 0x2000000000000000n) > 0n) {
         result = rshift(result * 0x1172b83c7d517adcen, FixMath.precision);
       }
-      if ((x & 0x1000000000000000n) > 0n) {
+      if (and(x, 0x1000000000000000n) > 0n) {
         result = rshift(result * 0x10b5586cf9890f62an, FixMath.precision);
       }
-      if ((x & 0x800000000000000n) > 0n) {
+      if (and(x, 0x800000000000000n) > 0n) {
         result = rshift(result * 0x1059b0d31585743aen, FixMath.precision);
       }
-      if ((x & 0x400000000000000n) > 0n) {
+      if (and(x, 0x400000000000000n) > 0n) {
         result = rshift(result * 0x102c9a3e778060ee7n, FixMath.precision);
       }
-      if ((x & 0x200000000000000n) > 0n) {
+      if (and(x, 0x200000000000000n) > 0n) {
         result = rshift(result * 0x10163da9fb33356d8n, FixMath.precision);
       }
-      if ((x & 0x100000000000000n) > 0n) {
+      if (and(x, 0x100000000000000n) > 0n) {
         result = rshift(result * 0x100b1afa5abcbed61n, FixMath.precision);
       }
-      if ((x & 0x80000000000000n) > 0n) {
+      if (and(x, 0x80000000000000n) > 0n) {
         result = rshift(result * 0x10058c86da1c09ea2n, FixMath.precision);
       }
-      if ((x & 0x40000000000000n) > 0n) {
+      if (and(x, 0x40000000000000n) > 0n) {
         result = rshift(result * 0x1002c605e2e8cec50n, FixMath.precision);
       }
-      if ((x & 0x20000000000000n) > 0n) {
+      if (and(x, 0x20000000000000n) > 0n) {
         result = rshift(result * 0x100162f3904051fa1n, FixMath.precision);
       }
-      if ((x & 0x10000000000000n) > 0n) {
+      if (and(x, 0x10000000000000n) > 0n) {
         result = rshift(result * 0x1000b175effdc76ban, FixMath.precision);
       }
-      if ((x & 0x8000000000000n) > 0n) {
+      if (and(x, 0x8000000000000n) > 0n) {
         result = rshift(result * 0x100058ba01fb9f96dn, FixMath.precision);
       }
-      if ((x & 0x4000000000000n) > 0n) {
+      if (and(x, 0x4000000000000n) > 0n) {
         result = rshift(result * 0x10002c5cc37da9492n, FixMath.precision);
       }
-      if ((x & 0x2000000000000n) > 0n) {
+      if (and(x, 0x2000000000000n) > 0n) {
         result = rshift(result * 0x1000162e525ee0547n, FixMath.precision);
       }
-      if ((x & 0x1000000000000n) > 0n) {
+      if (and(x, 0x1000000000000n) > 0n) {
         result = rshift(result * 0x10000b17255775c04n, FixMath.precision);
       }
-      if ((x & 0x800000000000n) > 0n) {
+      if (and(x, 0x800000000000n) > 0n) {
         result = rshift(result * 0x1000058b91b5bc9aen, FixMath.precision);
       }
-      if ((x & 0x400000000000n) > 0n) {
+      if (and(x, 0x400000000000n) > 0n) {
         result = rshift(result * 0x100002c5c89d5ec6dn, FixMath.precision);
       }
-      if ((x & 0x200000000000n) > 0n) {
+      if (and(x, 0x200000000000n) > 0n) {
         result = rshift(result * 0x10000162e43f4f831n, FixMath.precision);
       }
-      if ((x & 0x100000000000n) > 0) {
+      if (and(x, 0x100000000000n) > 0) {
         result = rshift(result * 0x100000b1721bcfc9an, FixMath.precision);
       }
-      if ((x & 0x80000000000n) > 0n) {
+      if (and(x, 0x80000000000n) > 0n) {
         result = rshift(result * 0x10000058b90cf1e6en, FixMath.precision);
       }
-      if ((x & 0x40000000000n) > 0n) {
+      if (and(x, 0x40000000000n) > 0n) {
         result = rshift(result * 0x1000002c5c863b73fn, FixMath.precision);
       }
-      if ((x & 0x20000000000n) > 0n) {
+      if (and(x, 0x20000000000n) > 0n) {
         result = rshift(result * 0x100000162e430e5a2n, FixMath.precision);
       }
-      if ((x & 0x10000000000n) > 0) {
+      if (and(x, 0x10000000000n) > 0) {
         result = rshift(result * 0x1000000b172183551n, FixMath.precision);
       }
-      if ((x & 0x8000000000n) > 0n) {
+      if (and(x, 0x8000000000n) > 0n) {
         result = rshift(result * 0x100000058b90c0b49n, FixMath.precision);
       }
-      if ((x & 0x4000000000n) > 0n) {
+      if (and(x, 0x4000000000n) > 0n) {
         result = rshift(result * 0x10000002c5c8601ccn, FixMath.precision);
       }
-      if ((x & 0x2000000000n) > 0n) {
+      if (and(x, 0x2000000000n) > 0n) {
         result = rshift(result * 0x1000000162e42fff0n, FixMath.precision);
       }
-      if ((x & 0x1000000000n) > 0n) {
+      if (and(x, 0x1000000000n) > 0n) {
         result = rshift(result * 0x10000000b17217fbbn, FixMath.precision);
       }
-      if ((x & 0x800000000n) > 0n) {
+      if (and(x, 0x800000000n) > 0n) {
         result = rshift(result * 0x1000000058b90bfcen, FixMath.precision);
       }
-      if ((x & 0x400000000n) > 0n) {
+      if (and(x, 0x400000000n) > 0n) {
         result = rshift(result * 0x100000002c5c85fe3n, FixMath.precision);
       }
-      if ((x & 0x200000000n) > 0n) {
+      if (and(x, 0x200000000n) > 0n) {
         result = rshift(result * 0x10000000162e42ff1n, FixMath.precision);
       }
-      if ((x & 0x100000000n) > 0) {
+      if (and(x, 0x100000000n) > 0) {
         result = rshift(result * 0x100000000b17217f8n, FixMath.precision);
       }
-      if ((x & 0x80000000n) > 0n) {
+      if (and(x, 0x80000000n) > 0n) {
         result = rshift(result * 0x10000000058b90bfcn, FixMath.precision);
       }
-      if ((x & 0x40000000n) > 0n) {
+      if (and(x, 0x40000000n) > 0n) {
         result = rshift(result * 0x1000000002c5c85fen, FixMath.precision);
       }
-      if ((x & 0x20000000n) > 0n) {
+      if (and(x, 0x20000000n) > 0n) {
         result = rshift(result * 0x100000000162e42ffn, FixMath.precision);
       }
-      if ((x & 0x10000000n) > 0n) {
+      if (and(x, 0x10000000n) > 0n) {
         result = rshift(result * 0x1000000000b17217fn, FixMath.precision);
       }
-      if ((x & 0x8000000n) > 0n) {
+      if (and(x, 0x8000000n) > 0n) {
         result = rshift(result * 0x100000000058b90c0n, FixMath.precision);
       }
-      if ((x & 0x4000000n) > 0n) {
+      if (and(x, 0x4000000n) > 0n) {
         result = rshift(result * 0x10000000002c5c860n, FixMath.precision);
       }
-      if ((x & 0x2000000n) > 0) {
+      if (and(x, 0x2000000n) > 0) {
         result = rshift(result * 0x1000000000162e430n, FixMath.precision);
       }
-      if ((x & 0x1000000n) > 0) {
+      if (and(x, 0x1000000n) > 0) {
         result = rshift(result * 0x10000000000b17218n, FixMath.precision);
       }
-      if ((x & 0x800000n) > 0) {
+      if (and(x, 0x800000n) > 0) {
         result = rshift(result * 0x1000000000058b90cn, FixMath.precision);
       }
-      if ((x & 0x400000n) > 0n) {
+      if (and(x, 0x400000n) > 0n) {
         result = rshift(result * 0x100000000002c5c86n, FixMath.precision);
       }
-      if ((x & 0x200000n) > 0n) {
+      if (and(x, 0x200000n) > 0n) {
         result = rshift(result * 0x10000000000162e43n, FixMath.precision);
       }
-      if ((x & 0x100000n) > 0n) {
+      if (and(x, 0x100000n) > 0n) {
         result = rshift(result * 0x100000000000b1721n, FixMath.precision);
       }
-      if ((x & 0x80000n) > 0n) {
+      if (and(x, 0x80000n) > 0n) {
         result = rshift(result * 0x10000000000058b91n, FixMath.precision);
       }
-      if ((x & 0x40000n) > 0n) {
+      if (and(x, 0x40000n) > 0n) {
         result = rshift(result * 0x1000000000002c5c8n, FixMath.precision);
       }
-      if ((x & 0x20000n) > 0n) {
+      if (and(x, 0x20000n) > 0n) {
         result = rshift(result * 0x100000000000162e4n, FixMath.precision);
       }
-      if ((x & 0x10000n) > 0n) {
+      if (and(x, 0x10000n) > 0n) {
         result = rshift(result * 0x1000000000000b172n, FixMath.precision);
       }
-      if ((x & 0x8000n) > 0n) {
+      if (and(x, 0x8000n) > 0n) {
         result = rshift(result * 0x100000000000058b9n, FixMath.precision);
       }
-      if ((x & 0x4000n) > 0n) {
+      if (and(x, 0x4000n) > 0n) {
         result = rshift(result * 0x10000000000002c5dn, FixMath.precision);
       }
-      if ((x & 0x2000n) > 0n) {
+      if (and(x, 0x2000n) > 0n) {
         result = rshift(result * 0x1000000000000162en, FixMath.precision);
       }
-      if ((x & 0x1000n) > 0n) {
+      if (and(x, 0x1000n) > 0n) {
         result = rshift(result * 0x10000000000000b17n, FixMath.precision);
       }
-      if ((x & 0x800n) > 0n) {
+      if (and(x, 0x800n) > 0n) {
         result = rshift(result * 0x1000000000000058cn, FixMath.precision);
       }
-      if ((x & 0x400n) > 0n) {
+      if (and(x, 0x400n) > 0n) {
         result = rshift(result * 0x100000000000002c6n, FixMath.precision);
       }
-      if ((x & 0x200n) > 0n) {
+      if (and(x, 0x200n) > 0n) {
         result = rshift(result * 0x10000000000000163n, FixMath.precision);
       }
-      if ((x & 0x100n) > 0n) {
+      if (and(x, 0x100n) > 0n) {
         result = rshift(result * 0x100000000000000b1n, FixMath.precision);
       }
-      if ((x & 0x80n) > 0n) {
+      if (and(x, 0x80n) > 0n) {
         result = rshift(result * 0x10000000000000059n, FixMath.precision);
       }
-      if ((x & 0x40n) > 0n) {
+      if (and(x, 0x40n) > 0n) {
         result = rshift(result * 0x1000000000000002cn, FixMath.precision);
       }
-      if ((x & 0x20n) > 0n) {
+      if (and(x, 0x20n) > 0n) {
         result = rshift(result * 0x10000000000000016n, FixMath.precision);
       }
-      if ((x & 0x10n) > 0n) {
+      if (and(x, 0x10n) > 0n) {
         result = rshift(result * 0x1000000000000000bn, FixMath.precision);
       }
-      if ((x & 0x8n) > 0n) {
+      if (and(x, 0x8n) > 0n) {
         result = rshift(result * 0x10000000000000006n, FixMath.precision);
       }
-      if ((x & 0x4n) > 0n) {
+      if (and(x, 0x4n) > 0n) {
         result = rshift(result * 0x10000000000000003n, FixMath.precision);
       }
-      if ((x & 0x2n) > 0n) {
+      if (and(x, 0x2n) > 0n) {
         result = rshift(result * 0x10000000000000001n, FixMath.precision);
       }
-      if ((x & 0x1n) > 0n) {
+      if (and(x, 0x1n) > 0n) {
         result = rshift(result * 0x10000000000000001n, FixMath.precision);
       }
   
@@ -235,8 +236,9 @@ export class FixMath extends SmartContractLib{
       //   2. Convert the result to the unsigned 60.18-decimal fixed-point format.
       //
       // This works because 2^(191-ip) = 2^ip / 2^191, where "ip" is the integer part "2^n".
+
       result = lshift(result, FixMath.precision);
-      result = result >> (191n - rshift(x, FixMath.precision));
+      result = (191n - rshift(x, FixMath.precision));
       return result;
     }
   
@@ -306,7 +308,7 @@ export class FixMath extends SmartContractLib{
       }
       if (x >= 4n) {
         // 2^2
-        x = x >> 2n;
+        x = rshift(x, 2n);
         msb += 2n;
       }
       if (x >= 2n) {
