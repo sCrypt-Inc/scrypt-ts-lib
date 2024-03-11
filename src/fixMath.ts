@@ -10,12 +10,16 @@ export class FixMath extends SmartContractLib{
   
     @prop()
     static readonly  precision : bigint = 64n;
-    static scale : bigint = 18446744073709551616n; // 2 ^ precision
-  
-    static ln2 : bigint = 12786308645202657280n; // log(x) * scale / log2(x)
-    static ln10 : bigint = 5553023288523357184n; // log10(x) * scale / log2(x)
-    static fixE : bigint = 50143449209799254016n; // e * scale
-    static log2e : bigint = 26613026195688644608n; // Math.floor(Math.log2(Math.E) * 2**64)
+    @prop()
+    static readonly scale : bigint = 18446744073709551616n; // 2 ^ precision
+    @prop()
+    static readonly ln2 : bigint = 12786308645202657280n; // log(x) * scale / log2(x)
+    @prop()
+    static readonly ln10 : bigint = 5553023288523357184n; // log10(x) * scale / log2(x)
+    @prop()
+    static readonly fixE : bigint = 50143449209799254016n; // e * scale
+    @prop()
+    static readonly log2e : bigint = 26613026195688644608n; // Math.floor(Math.log2(Math.E) * 2**64)
   
     /**
     * Calculates the binary exponent of x using the binary fraction method.
