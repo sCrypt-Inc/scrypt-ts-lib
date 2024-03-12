@@ -1,5 +1,5 @@
 import { SmartContract, method, assert } from "scrypt-ts";
-import { FixMath } from '../scrypt-ts-lib'
+import { FixMath } from '../../src/fixMath'
 
 export class TestFixMath extends SmartContract{
   static readonly scale: bigint= 18446744073709551616n;
