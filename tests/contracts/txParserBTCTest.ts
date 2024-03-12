@@ -14,7 +14,7 @@ import {
     FixedArray,
 } from 'scrypt-ts'
 
-export class TransactionParserTest extends SmartContract {
+export class TransactionParserTestBTC extends SmartContract {
     @method()
     public unlock(
         rawTx: ByteString,
