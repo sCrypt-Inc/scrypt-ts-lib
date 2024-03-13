@@ -1,6 +1,6 @@
 import { expect } from 'chai'
 
-import { TransactionParserTest } from '../contracts/txParserBTCTest'
+import { TransactionParserTestBTC } from '../contracts/txParserBTCTest'
 import { FixedArray, toByteString, ByteString } from 'scrypt-ts'
 import { MAX_WITNESS_ITEM_COUNT } from '../scrypt-ts-lib'
 
