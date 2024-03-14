@@ -5,7 +5,7 @@ import { FixedArray, toByteString, ByteString } from 'scrypt-ts'
 import { MAX_WITNESS_ITEM_COUNT } from '../scrypt-ts-lib'
 
 describe('Test TransactionParserTestBTC', () => {
-    let parserTest: TransactionParserTest
+    let parserTest: TransactionParserTestBTC
 
     before(async () => {
         await TransactionParserTestBTC.compile()
