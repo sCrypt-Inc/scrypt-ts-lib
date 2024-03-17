@@ -1,15 +1,15 @@
 import { expect } from 'chai'
 
-import { TransactionParserTest } from '../contracts/txParserBTCTest'
+import { TransactionParserTestBTC } from '../contracts/txParserBTCTest'
 import { FixedArray, toByteString, ByteString } from 'scrypt-ts'
 import { MAX_WITNESS_ITEM_COUNT } from '../scrypt-ts-lib'
 
-describe('Test TransactionParserTest', () => {
-    let parserTest: TransactionParserTest
+describe('Test TransactionParserTestBTC', () => {
+    let parserTest: TransactionParserTestBTC
 
     before(async () => {
-        await TransactionParserTest.compile()
-        parserTest = new TransactionParserTest()
+        await TransactionParserTestBTC.compile()
+        parserTest = new TransactionParserTestBTC()
     })
 
     it('should pass', () => {
